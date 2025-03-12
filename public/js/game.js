@@ -1,3 +1,198 @@
+// Game Data
+const gameData = {
+    categories: {
+        'Animaux': ['Chien', 'Chat', 'Cheval', 'Fourmi', 'Lion', 'Tigre', 'Éléphant', 'Girafe', 'Singe','Cerf','Sardine','Saumon'],
+        'Chanteurs': ['Soprano', 'Nekfeu', 'Adele', 'Beyoncé', 'Ed Sheeran', 'Taylor Swift', 'Drake', 'Rihanna', 'Justin Bieber', 'Ariana Grande','BigFlo et Oli'],
+        'Films': ['Titanic', 'Star Wars', 'Le Roi Lion', 'Avatar', 'Matrix', 'Avengers', 'Jurassic Park', 'Inception','Divergente'],
+        'Personnages': ['Batman', 'Spider-Man', 'Mickey Mouse', 'Donald Duck', 'Superman', 'Wonder Woman', 'Homer Simpson', 'Mario', 'Dark Vador', 'James Bond','Gollum'],
+        'Sports': ['Football', 'Basketball', 'Tennis', 'Rugby', 'Natation', 'Athlétisme', 'Volleyball', 'Ski', 'Snowboard', 'Golf', 'Cyclisme','Echec'],
+        'Pays': ['France', 'États-Unis', 'Japon', 'Brésil', 'Australie', 'Italie', 'Canada', 'Espagne', 'Russie', 'Chine'],
+        'Métiers': ['Médecin', 'Enseignant', 'Pilote', 'Pompier', 'Policier', 'Boulanger', 'Informaticien', 'Avocat', 'Cuisinier', 'Architecte'],
+        'Objets': ['Téléphone', 'Ordinateur', 'Table', 'Chaise', 'Livre', 'Stylo', 'Horloge', 'Voiture', 'Télévision', 'Miroir']
+    },
+    players: [],
+    teams: [],
+    selectedCategories: [],
+    cardsPerPlayer: 5,
+    timerSeconds: 60,
+    currentRound: 1,
+    currentTeam: 0,
+    currentPlayerIndex: 0, // Index du joueur actuel dans l'équipe
+    roundDescriptions: [
+        "Manche 1: Décrire avec des mots sans passer",
+        "Manche 2: Un seul mot",
+        "Manche 3: Mime uniquement"
+    ],
+    gameCards: [],
+    roundCards: [],
+    currentCardIndex: 0,
+    scores: [],
+    passedCards: [],
+    // Statistiques du jeu
+    stats: {
+        cardsFoundByTeam: [], // Nombre de cartes trouvées par équipe
+        cardsFoundByRound: [0, 0, 0], // Nombre de cartes trouvées par manche
+        timePerCard: [], // Temps moyen par carte
+        passedCardsCount: 0 // Nombre de cartes passées
+    },
+    // Paramètres audio
+    soundEnabled: true
+};
+
+// DOM Elements
+const setupPhase = document.getElementById('setup-phase');
+const teamSetupPhase = document.getElementById('team-setup-phase');
+const gameSetupPhase = document.getElementById('game-setup-phase');
+const gamePlayPhase = document.getElementById('game-play-phase');
+const scorePhase = document.getElementById('score-phase');
+const gameOverPhase = document.getElementById('game-over-phase');
+
+const playerNameInput = document.getElementById('player-name');
+const addPlayerButton = document.getElementById('add-player');
+const playerList = document.getElementById('player-list');
+const continueToTeamsButton = document.getElementById('continue-to-teams');
+
+const teamCountSelect = document.getElementById('team-count');
+const teamAssignmentContainer = document.getElementById('team-assignment-container');
+const continueToGameSetupButton = document.getElementById('continue-to-game-setup');
+
+const categoriesContainer = document.getElementById('categories-container');
+const timerSecondsInput = document.getElementById('timer-seconds');
+const cardsPerPlayerInput = document.getElementById('cards-per-player');
+const startGameButton = document.getElementById('start-game');
+
+const roundInfo = document.getElementById('round-info');
+const currentTeamDisplay = document.getElementById('current-team');
+const timerDisplay = document.getElementById('timer-display');
+const startTimerButton = document.getElementById('start-timer');
+const nextCardButton = document.getElementById('next-card');
+const passCardButton = document.getElementById('pass-card');
+const cardCategory = document.getElementById('card-category');
+const cardWord = document.getElementById('card-word');
+const endTurnButton = document.getElementById('end-turn');
+const cardsRemainingDisplay = document.getElementById('cards-remaining');
+
+const scoresTable = document.getElementById('scores-table');
+const scoresBody = document.getElementById('scores-body');
+const continueNextRoundButton = document.getElementById('continue-next-round');
+const endGameButton = document.getElementById('end-game');
+
+const winnerDisplay = document.getElementById('winner-display');
+const finalScoresTable = document.getElementById('final-scores-table');
+const finalScoresBody = document.getElementById('final-scores-body');
+const newGameButton = document.getElementById('new-game');
+
+// Timer variables
+let timerInterval;
+let timeLeft;
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM chargé, initialisation du jeu...");
+    try {
+        addDynamicStyles();
+        initGame();
+        console.log("Jeu initialisé avec succès");
+    } catch (error) {
+        console.error("Erreur lors de l'initialisation du jeu:", error);
+    }
+});
+
+// Ajouter des styles CSS dynamiques pour les animations
+function addDynamicStyles() {
+    if (!document.getElementById('dynamic-game-styles')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'dynamic-game-styles';
+        styleSheet.innerHTML = `
+            .shake-animation {
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            
+            #card-word {
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+            
+            .game-card:hover {
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    }
+}
+
+// Initialize Game
+function initGame() {
+    // Vérifier que tous les éléments DOM nécessaires sont présents
+    if (!playerNameInput) {
+        console.error("L'élément playerNameInput n'a pas été trouvé");
+        return;
+    }
+    if (!addPlayerButton) {
+        console.error("L'élément addPlayerButton n'a pas été trouvé");
+        return;
+    }
+    if (!playerList) {
+        console.error("L'élément playerList n'a pas été trouvé");
+        return;
+    }
+
+    // Player setup
+    addPlayerButton.addEventListener('click', addPlayer);
+    playerNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addPlayer();
+        }
+    });
+    continueToTeamsButton.addEventListener('click', setupTeams);
+
+    // Team setup
+    teamCountSelect.addEventListener('change', updateTeamAssignment);
+    continueToGameSetupButton.addEventListener('click', setupGame);
+
+    // Game setup
+    setupCategories();
+    timerSecondsInput.addEventListener('change', updateTimerConfig);
+    cardsPerPlayerInput.addEventListener('change', updateCardsPerPlayer);
+    startGameButton.addEventListener('click', startGame);
+
+    // Game play
+    startTimerButton.addEventListener('click', startTimer);
+    nextCardButton.addEventListener('click', nextCard);
+    passCardButton.addEventListener('click', passCard);
+    endTurnButton.addEventListener('click', endTurn);
+
+    // Score phase
+    continueNextRoundButton.addEventListener('click', nextRound);
+    endGameButton.addEventListener('click', showGameOver);
+
+    // Game over
+    newGameButton.addEventListener('click', resetGame);
+
+    // Ajouter la barre de progression du timer
+    addTimerProgressBar();
+
+    // Initialiser les statistiques
+    initGameStats();
+
+    console.log("Tous les événements ont été attachés avec succès");
+}
+
+// Fonction pour animer le flip de carte
+function animateCardFlip() {
+    const cardElement = document.getElementById('card-word');
+    cardElement.classList.add('card-flip-enter');
+
+    setTimeout(() => {
+        cardElement.classList.remove('card-flip-enter');
+    }, 600);
+}
+
 function resetGame() {
     // Reset game data
     gameData.players = [];
@@ -103,162 +298,8 @@ function shuffleArray(array) {
 // Update the number of cards remaining
 function updateCardsRemaining() {
     if (cardsRemainingDisplay) {
-        cardsRemainingDisplay.textContent = `Cartes restantes: ${gameData.roundCards.length}`;
+        cardsRemainingDisplay.innerHTML = `<i class="fas fa-clone"></i> Cartes restantes: ${gameData.roundCards.length}`;
     }
-}// Game Data
-const gameData = {
-    categories: {
-        'Animaux': ['Chien', 'Chat', 'Cheval', 'Fourmi', 'Lion', 'Tigre', 'Éléphant', 'Girafe', 'Singe','Cerf','Sardine','Saumon',],
-        'Chanteurs': ['Soprano', 'Nekfeu', 'Adele', 'Beyoncé', 'Ed Sheeran', 'Taylor Swift', 'Drake', 'Rihanna', 'Justin Bieber', 'Ariana Grande','BigFlo et Oli'],
-        'Films': ['Titanic', 'Star Wars', 'Le Roi Lion', 'Avatar', 'Matrix', 'Avengers', 'Jurassic Park', 'Inception','Divergente'],
-        'Personnages': ['Batman', 'Spider-Man', 'Mickey Mouse', 'Donald Duck', 'Superman', 'Wonder Woman', 'Homer Simpson', 'Mario', 'Dark Vador', 'James Bond','Gollum'],
-        'Sports': ['Football', 'Basketball', 'Tennis', 'Rugby', 'Natation', 'Athlétisme', 'Volleyball', 'Ski', 'Snowboard', 'Golf', 'Cyclisme','Echec'],
-        'Pays': ['France', 'États-Unis', 'Japon', 'Brésil', 'Australie', 'Italie', 'Canada', 'Espagne', 'Russie', 'Chine'],
-        'Métiers': ['Médecin', 'Enseignant', 'Pilote', 'Pompier', 'Policier', 'Boulanger', 'Informaticien', 'Avocat', 'Cuisinier', 'Architecte'],
-        'Objets': ['Téléphone', 'Ordinateur', 'Table', 'Chaise', 'Livre', 'Stylo', 'Horloge', 'Voiture', 'Télévision', 'Miroir']
-    },
-    players: [],
-    teams: [],
-    selectedCategories: [],
-    cardsPerPlayer: 5,
-    timerSeconds: 60,
-    currentRound: 1,
-    currentTeam: 0,
-    currentPlayerIndex: 0, // Index du joueur actuel dans l'équipe
-    roundDescriptions: [
-        "Manche 1: Décrire avec des mots sans passer",
-        "Manche 2: Un seul mot",
-        "Manche 3: Mime uniquement"
-    ],
-    gameCards: [],
-    roundCards: [],
-    currentCardIndex: 0,
-    scores: [],
-    passedCards: [],
-    // Statistiques du jeu
-    stats: {
-        cardsFoundByTeam: [], // Nombre de cartes trouvées par équipe
-        cardsFoundByRound: [0, 0, 0], // Nombre de cartes trouvées par manche
-        timePerCard: [], // Temps moyen par carte
-        passedCardsCount: 0 // Nombre de cartes passées
-    },
-    // Paramètres audio
-    soundEnabled: true
-};
-
-// DOM Elements
-const setupPhase = document.getElementById('setup-phase');
-const teamSetupPhase = document.getElementById('team-setup-phase');
-const gameSetupPhase = document.getElementById('game-setup-phase');
-const gamePlayPhase = document.getElementById('game-play-phase');
-const scorePhase = document.getElementById('score-phase');
-const gameOverPhase = document.getElementById('game-over-phase');
-
-const playerNameInput = document.getElementById('player-name');
-const addPlayerButton = document.getElementById('add-player');
-const playerList = document.getElementById('player-list');
-const continueToTeamsButton = document.getElementById('continue-to-teams');
-
-const teamCountSelect = document.getElementById('team-count');
-const teamAssignmentContainer = document.getElementById('team-assignment-container');
-const continueToGameSetupButton = document.getElementById('continue-to-game-setup');
-
-const categoriesContainer = document.getElementById('categories-container');
-const timerSecondsInput = document.getElementById('timer-seconds');
-const cardsPerPlayerInput = document.getElementById('cards-per-player');
-const startGameButton = document.getElementById('start-game');
-
-const roundInfo = document.getElementById('round-info');
-const currentTeamDisplay = document.getElementById('current-team');
-const timerDisplay = document.getElementById('timer-display');
-const startTimerButton = document.getElementById('start-timer');
-const nextCardButton = document.getElementById('next-card');
-const passCardButton = document.getElementById('pass-card');
-const cardCategory = document.getElementById('card-category');
-const cardWord = document.getElementById('card-word');
-const endTurnButton = document.getElementById('end-turn');
-const cardsRemainingDisplay = document.getElementById('cards-remaining');
-
-const scoresTable = document.getElementById('scores-table');
-const scoresBody = document.getElementById('scores-body');
-const continueNextRoundButton = document.getElementById('continue-next-round');
-const endGameButton = document.getElementById('end-game');
-
-const winnerDisplay = document.getElementById('winner-display');
-const finalScoresTable = document.getElementById('final-scores-table');
-const finalScoresBody = document.getElementById('final-scores-body');
-const newGameButton = document.getElementById('new-game');
-
-// Timer variables
-let timerInterval;
-let timeLeft;
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM chargé, initialisation du jeu...");
-    try {
-        initGame();
-        console.log("Jeu initialisé avec succès");
-    } catch (error) {
-        console.error("Erreur lors de l'initialisation du jeu:", error);
-    }
-});
-
-// Initialize Game
-function initGame() {
-    // Vérifier que tous les éléments DOM nécessaires sont présents
-    if (!playerNameInput) {
-        console.error("L'élément playerNameInput n'a pas été trouvé");
-        return;
-    }
-    if (!addPlayerButton) {
-        console.error("L'élément addPlayerButton n'a pas été trouvé");
-        return;
-    }
-    if (!playerList) {
-        console.error("L'élément playerList n'a pas été trouvé");
-        return;
-    }
-
-    // Player setup
-    addPlayerButton.addEventListener('click', addPlayer);
-    playerNameInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            addPlayer();
-        }
-    });
-    continueToTeamsButton.addEventListener('click', setupTeams);
-
-    // Team setup
-    teamCountSelect.addEventListener('change', updateTeamAssignment);
-    continueToGameSetupButton.addEventListener('click', setupGame);
-
-    // Game setup
-    setupCategories();
-    timerSecondsInput.addEventListener('change', updateTimerConfig);
-    cardsPerPlayerInput.addEventListener('change', updateCardsPerPlayer);
-    startGameButton.addEventListener('click', startGame);
-
-    // Game play
-    startTimerButton.addEventListener('click', startTimer);
-    nextCardButton.addEventListener('click', nextCard);
-    passCardButton.addEventListener('click', passCard);
-    endTurnButton.addEventListener('click', endTurn);
-
-    // Score phase
-    continueNextRoundButton.addEventListener('click', nextRound);
-    endGameButton.addEventListener('click', showGameOver);
-
-    // Game over
-    newGameButton.addEventListener('click', resetGame);
-
-    // Ajouter la barre de progression du timer
-    addTimerProgressBar();
-
-    // Initialiser les statistiques
-    initGameStats();
-
-    console.log("Tous les événements ont été attachés avec succès");
 }
 
 // Ajouter la barre de progression du timer
@@ -313,6 +354,12 @@ function addPlayer() {
             renderPlayerList();
             playerNameInput.value = '';
             playerNameInput.focus();
+
+            // Animation pour l'ajout de joueur
+            const newPlayerItem = playerList.lastElementChild;
+            if (newPlayerItem) {
+                newPlayerItem.style.animation = 'fadeIn 0.5s ease';
+            }
         }
     } catch (error) {
         console.error("Erreur lors de l'ajout d'un joueur:", error);
@@ -326,7 +373,7 @@ function renderPlayerList() {
         li.textContent = player;
 
         const removeButton = document.createElement('button');
-        removeButton.textContent = 'X';
+        removeButton.innerHTML = '<i class="fas fa-times"></i>';
         removeButton.addEventListener('click', () => removePlayer(index));
 
         li.appendChild(removeButton);
@@ -345,9 +392,21 @@ function removePlayer(index) {
 // Team Setup Functions
 function setupTeams() {
     if (gameData.players.length < 2) {
-        alert('Veuillez ajouter au moins 2 joueurs.');
+        // Afficher un toast d'erreur
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> Veuillez ajouter au moins 2 joueurs.';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 3000);
         return;
     }
+
     setupPhase.classList.add('hidden');
     teamSetupPhase.classList.remove('hidden');
     updateTeamAssignment();
@@ -362,7 +421,7 @@ function updateTeamAssignment() {
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team-assignment';
         teamDiv.innerHTML = `
-            <h3>Équipe ${i + 1}</h3>
+            <h3><i class="fas fa-users"></i> Équipe ${i + 1}</h3>
             <ul class="team-players-list" id="team-${i}-players"></ul>
         `;
         teamAssignmentContainer.appendChild(teamDiv);
@@ -430,7 +489,18 @@ function updateTeamLists() {
 // Game Setup Functions
 function setupGame() {
     if (!gameData.teams.every(team => team.length > 0)) {
-        alert('Chaque équipe doit avoir au moins un joueur.');
+        // Afficher un toast d'erreur
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> Chaque équipe doit avoir au moins un joueur.';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 3000);
         return;
     }
 
@@ -449,7 +519,7 @@ function setupGame() {
                 <input type="checkbox" id="sound-toggle-checkbox" ${gameData.soundEnabled ? 'checked' : ''}>
                 <span class="slider round"></span>
             </label>
-            <span>Sons</span>
+            <span>Sons <i class="fas fa-volume-up"></i></span>
         `;
 
         document.querySelector('#game-setup h2').after(soundToggle);
@@ -509,7 +579,18 @@ function startGame() {
     updateCardsPerPlayer();
 
     if (gameData.selectedCategories.length === 0) {
-        alert('Veuillez sélectionner au moins une catégorie.');
+        // Afficher un toast d'erreur
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> Veuillez sélectionner au moins une catégorie.';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 3000);
         return;
     }
 
@@ -518,7 +599,18 @@ function startGame() {
 
     // Vérifier qu'il y a bien des cartes générées
     if (gameData.gameCards.length === 0) {
-        alert('Aucune carte n\'a été générée. Veuillez sélectionner plus de catégories ou augmenter le nombre de cartes par joueur.');
+        // Afficher un toast d'erreur
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> Aucune carte n\'a été générée. Veuillez sélectionner plus de catégories ou augmenter le nombre de cartes par joueur.';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 3000);
         return;
     }
 
@@ -534,7 +626,18 @@ function startGame() {
 
     // Vérifier que des cartes sont disponibles pour la première manche
     if (gameData.roundCards.length === 0) {
-        alert('Erreur : aucune carte n\'est disponible pour commencer le jeu.');
+        // Afficher un toast d'erreur
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur : aucune carte n\'est disponible pour commencer le jeu.';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 3000);
         return;
     }
 
@@ -549,6 +652,19 @@ function startGame() {
 
     // Message de démarrage
     console.log(`Le jeu démarre avec ${gameData.teams.length} équipes et ${gameData.roundCards.length} cartes`);
+
+    // Afficher un toast de démarrage
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.innerHTML = '<i class="fas fa-play"></i> La partie commence !';
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => {
+            toast.remove();
+        }, 500);
+    }, 2000);
 }
 
 function generateGameCards() {
@@ -600,7 +716,6 @@ function prepareRound() {
     console.log(`Manche ${gameData.currentRound} préparée avec ${gameData.roundCards.length} cartes`);
 }
 
-
 // Game Play Functions
 function startTimer() {
     if (timerInterval) {
@@ -615,12 +730,12 @@ function startTimer() {
         passCardButton.disabled = true;
         passCardButton.classList.add('btn-disabled');
         // Changer le texte du bouton nextCard pour clarifier
-        nextCardButton.textContent = "Trouvé !";
+        nextCardButton.innerHTML = '<i class="fas fa-check"></i> Trouvé !';
     } else {
         passCardButton.disabled = false;
         passCardButton.classList.remove('btn-disabled');
-        nextCardButton.textContent = "Trouvé !";
-        passCardButton.textContent = "Passer";
+        nextCardButton.innerHTML = '<i class="fas fa-check"></i> Trouvé !';
+        passCardButton.innerHTML = '<i class="fas fa-forward"></i> Passer';
     }
 
     // Reset timer
@@ -648,8 +763,7 @@ function updateTimerDisplay() {
     timerDisplay.textContent = timeLeft !== undefined ? timeLeft : gameData.timerSeconds;
 
     // Mise à jour de la barre de progression
-    if (document.getElementById('timer-progress-bar')) {
-        const progressBar = document.getElementById('timer-progress-bar');
+    if (document.getElementById('timer-progress-fill')) {
         const progressFill = document.getElementById('timer-progress-fill');
 
         if (timeLeft !== undefined) {
@@ -658,23 +772,27 @@ function updateTimerDisplay() {
 
             // Changement de couleur selon le temps restant
             if (percentage > 60) {
-                progressFill.style.backgroundColor = 'var(--success-color)';
+                progressFill.style.background = 'linear-gradient(90deg, var(--success-color), #85ffbb)';
+                progressFill.classList.remove('low-time');
             } else if (percentage > 30) {
-                progressFill.style.backgroundColor = 'var(--warning-color)';
+                progressFill.style.background = 'linear-gradient(90deg, var(--warning-color), #ffcc80)';
+                progressFill.classList.remove('low-time');
             } else {
-                progressFill.style.backgroundColor = 'var(--error-color)';
+                progressFill.style.background = 'linear-gradient(90deg, var(--error-color), #ff7b7b)';
+                progressFill.classList.add('low-time');
             }
 
             // Ajouter une animation de pulsation quand il reste peu de temps
             if (percentage <= 20) {
-                progressFill.classList.add('pulse-animation');
+                timerDisplay.classList.add('pulse-animation');
             } else {
-                progressFill.classList.remove('pulse-animation');
+                timerDisplay.classList.remove('pulse-animation');
             }
         } else {
             progressFill.style.width = '100%';
-            progressFill.style.backgroundColor = 'var(--primary-color)';
-            progressFill.classList.remove('pulse-animation');
+            progressFill.style.background = 'linear-gradient(90deg, var(--primary-color), #ff7b7b)';
+            progressFill.classList.remove('low-time');
+            timerDisplay.classList.remove('pulse-animation');
         }
     }
 }
@@ -699,12 +817,18 @@ function showCurrentCard() {
         gameData.currentCardIndex = 0;
     }
 
+    // Animation de flip avant d'afficher la nouvelle carte
+    animateCardFlip();
+
     // Afficher la carte actuelle (qui est maintenant garantie d'exister)
     const card = gameData.roundCards[gameData.currentCardIndex];
-    cardCategory.textContent = card.category;
-    cardWord.textContent = card.word;
-}
 
+    // Léger délai pour synchroniser avec l'animation
+    setTimeout(() => {
+        cardCategory.textContent = card.category;
+        cardWord.textContent = card.word;
+    }, 150);
+}
 
 function nextCard() {
     if (gameData.currentCardIndex < gameData.roundCards.length) {
@@ -722,9 +846,17 @@ function nextCard() {
         // Jouer un son et ajouter une animation
         playSound('card-found');
         cardWord.classList.add('card-found-animation');
+
+        // Animation de la carte
+        const gameCard = document.querySelector('.game-card');
+        gameCard.style.borderColor = 'var(--success-color)';
+        gameCard.style.boxShadow = '0 0 15px rgba(78, 255, 145, 0.3)';
+
         setTimeout(() => {
+            gameCard.style.borderColor = 'var(--primary-color)';
+            gameCard.style.boxShadow = '';
             cardWord.classList.remove('card-found-animation');
-        }, 500);
+        }, 700);
 
         // Remove card from deck
         gameData.roundCards.splice(gameData.currentCardIndex, 1);
@@ -757,39 +889,46 @@ function passCard() {
         // Jouer un son et ajouter une animation
         playSound('card-pass');
         cardWord.classList.add('card-pass-animation');
+
+        // Animation de la carte
+        const gameCard = document.querySelector('.game-card');
+        gameCard.style.borderColor = 'var(--secondary-color)';
         setTimeout(() => {
-            cardWord.classList.remove('card-pass-animation');
+            gameCard.style.borderColor = 'var(--primary-color)';
         }, 500);
 
-        // Move current card to passed cards
-        const passedCard = gameData.roundCards[gameData.currentCardIndex];
-        gameData.passedCards.push(passedCard);
+        setTimeout(() => {
+            cardWord.classList.remove('card-pass-animation');
+        }, 700);
+
+        // Important: Au lieu de déplacer vers passedCards, on déplace simplement
+        // la carte actuelle à la fin du paquet de cartes actuel
+        const currentCard = gameData.roundCards[gameData.currentCardIndex];
+
+        // Supprimer la carte de sa position actuelle
         gameData.roundCards.splice(gameData.currentCardIndex, 1);
+
+        // L'ajouter à la fin du paquet
+        gameData.roundCards.push(currentCard);
+
+        // Petit message pour informer que la carte a été déplacée à la fin
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-redo-alt"></i> Carte déplacée à la fin du paquet';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }, 1500);
 
         // Update cards remaining display
         updateCardsRemaining();
 
-        // Show next card or passed cards if no more new cards
-        if (gameData.roundCards.length > 0) {
-            showCurrentCard();
-        } else if (gameData.passedCards.length > 0) {
-            // Reuse passed cards
-            gameData.roundCards = [...gameData.passedCards];
-            gameData.passedCards = [];
-            gameData.currentCardIndex = 0;
-            showCurrentCard();
-            updateCardsRemaining();
-        } else {
-            cardCategory.textContent = '';
-            cardWord.textContent = 'Plus de cartes!';
-            nextCardButton.disabled = true;
-            passCardButton.disabled = true;
-
-            // Attendre un peu pour que le joueur voie le message "Plus de cartes"
-            setTimeout(() => {
-                showScores();
-            }, 1500);
-        }
+        // Afficher la carte suivante
+        showCurrentCard();
     }
 }
 
@@ -798,12 +937,35 @@ function timerEnded() {
     passCardButton.disabled = true;
     endTurnButton.classList.remove('hidden');
 
+    // Effet de vibration sur la carte
+    const gameCard = document.querySelector('.game-card');
+    gameCard.classList.add('shake-animation');
+    setTimeout(() => {
+        gameCard.classList.remove('shake-animation');
+    }, 500);
+
     // Jouer un son et ajouter une animation
     playSound('timer-end');
     timerDisplay.classList.add('timer-end-animation');
+
+    // Ajouter un message de fin de temps
+    if (!document.querySelector('.time-up-message')) {
+        const timeUpMsg = document.createElement('div');
+        timeUpMsg.className = 'toast-message time-up-message';
+        timeUpMsg.innerHTML = '<i class="fas fa-clock"></i> Temps écoulé !';
+        document.body.appendChild(timeUpMsg);
+
+        setTimeout(() => {
+            timeUpMsg.classList.add('fade-out');
+            setTimeout(() => {
+                timeUpMsg.remove();
+            }, 500);
+        }, 2000);
+    }
+
     setTimeout(() => {
         timerDisplay.classList.remove('timer-end-animation');
-    }, 1000);
+    }, 1500);
 }
 
 function endTurn() {
@@ -861,7 +1023,7 @@ function updateRoundInfo() {
 function updateCurrentTeam() {
     const currentTeam = gameData.teams[gameData.currentTeam];
     const currentPlayer = currentTeam[gameData.currentPlayerIndex];
-    currentTeamDisplay.textContent = `Équipe ${gameData.currentTeam + 1} - Joueur: ${currentPlayer}`;
+    currentTeamDisplay.innerHTML = `<i class="fas fa-users"></i> Équipe ${gameData.currentTeam + 1} - Joueur: ${currentPlayer}`;
 }
 
 // Score Functions
@@ -898,7 +1060,7 @@ function showScores() {
             const nextPlayer = nextTeam[gameData.currentPlayerIndex];
             messageDiv.innerHTML = `
                 <p>Tous les mots ont été joués pour la manche ${gameData.currentRound}!</p>
-                <p class="next-player-info">La manche ${gameData.currentRound + 1} commencera avec 
+                <p class="next-player-info"><i class="fas fa-user-circle"></i> La manche ${gameData.currentRound + 1} commencera avec 
                 <strong>${nextPlayer}</strong> (Équipe ${gameData.currentTeam + 1})</p>
             `;
         } else {
@@ -912,12 +1074,16 @@ function showScores() {
 function renderScores() {
     scoresBody.innerHTML = '';
 
+    // Ajouter une petite animation aux scores
+    scoresTable.classList.add('animate-scores');
+
     gameData.teams.forEach((team, index) => {
         const row = document.createElement('tr');
+        row.style.animation = `fadeIn ${0.3 + index * 0.1}s ease forwards`;
 
         // Team name
         const teamCell = document.createElement('td');
-        teamCell.textContent = `Équipe ${index + 1}`;
+        teamCell.innerHTML = `<i class="fas fa-users"></i> Équipe ${index + 1}`;
         row.appendChild(teamCell);
 
         // Scores for each round
@@ -925,6 +1091,13 @@ function renderScores() {
         gameData.scores[index].forEach((score, roundIndex) => {
             const scoreCell = document.createElement('td');
             scoreCell.textContent = score;
+
+            // Ajouter un style spécial au score de la manche actuelle
+            if (roundIndex === gameData.currentRound - 1) {
+                scoreCell.style.color = 'var(--primary-color)';
+                scoreCell.style.fontWeight = 'bold';
+            }
+
             row.appendChild(scoreCell);
             totalScore += score;
         });
@@ -995,7 +1168,7 @@ function nextRound() {
     // Créer un message toast temporaire
     const toast = document.createElement('div');
     toast.className = 'toast-message';
-    toast.textContent = `${currentPlayer} (Équipe ${gameData.currentTeam + 1}) commence la manche ${gameData.currentRound}`;
+    toast.innerHTML = `<i class="fas fa-play-circle"></i> ${currentPlayer} (Équipe ${gameData.currentTeam + 1}) commence la manche ${gameData.currentRound}`;
     document.body.appendChild(toast);
 
     // Faire disparaître le toast après 3 secondes
@@ -1028,10 +1201,11 @@ function renderFinalScores() {
 
     gameData.teams.forEach((team, index) => {
         const row = document.createElement('tr');
+        row.style.animation = `fadeIn ${0.3 + index * 0.1}s ease forwards`;
 
         // Team name
         const teamCell = document.createElement('td');
-        teamCell.textContent = `Équipe ${index + 1}`;
+        teamCell.innerHTML = `<i class="fas fa-users"></i> Équipe ${index + 1}`;
         row.appendChild(teamCell);
 
         // Scores for each round
@@ -1060,9 +1234,9 @@ function renderFinalScores() {
 
     // Display winner
     if (winnerIndex !== -1) {
-        winnerDisplay.innerHTML = `<h3>L'équipe ${winnerIndex + 1} gagne avec ${highestScore} points!</h3>`;
+        winnerDisplay.innerHTML = `<h3><i class="fas fa-trophy"></i> L'équipe ${winnerIndex + 1} gagne avec ${highestScore} points!</h3>`;
     } else {
-        winnerDisplay.innerHTML = '<h3>Égalité!</h3>';
+        winnerDisplay.innerHTML = '<h3><i class="fas fa-balance-scale"></i> Égalité!</h3>';
     }
 }
 
@@ -1076,19 +1250,23 @@ function renderGameStats() {
     const statsContent = document.createElement('div');
     statsContent.className = 'stats-content';
 
-    // 1. Statistiques par manche
+    // 1. Statistiques par manche avec animations
     const roundStats = document.createElement('div');
     roundStats.className = 'stats-section';
+
+    // Calculer la valeur maximale pour normaliser les barres
+    const maxRoundValue = Math.max(...gameData.stats.cardsFoundByRound, 1);
+
     roundStats.innerHTML = `
-        <h4>Mots trouvés par manche</h4>
+        <h4><i class="fas fa-chart-bar"></i> Mots trouvés par manche</h4>
         <div class="stats-chart">
-            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[0] / Math.max(...gameData.stats.cardsFoundByRound, 1)) * 100}%">
+            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[0] / maxRoundValue) * 100}%">
                 <span class="bar-value">${gameData.stats.cardsFoundByRound[0]}</span>
             </div>
-            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[1] / Math.max(...gameData.stats.cardsFoundByRound, 1)) * 100}%">
+            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[1] / maxRoundValue) * 100}%">
                 <span class="bar-value">${gameData.stats.cardsFoundByRound[1]}</span>
             </div>
-            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[2] / Math.max(...gameData.stats.cardsFoundByRound, 1)) * 100}%">
+            <div class="chart-bar" style="height: ${(gameData.stats.cardsFoundByRound[2] / maxRoundValue) * 100}%">
                 <span class="bar-value">${gameData.stats.cardsFoundByRound[2]}</span>
             </div>
         </div>
@@ -1103,21 +1281,28 @@ function renderGameStats() {
     const teamStats = document.createElement('div');
     teamStats.className = 'stats-section';
 
-    let teamStatsHTML = '<h4>Performance des équipes</h4><ul class="team-stats-list">';
+    let teamStatsHTML = '<h4><i class="fas fa-users"></i> Performance des équipes</h4><ul class="team-stats-list">';
     gameData.teams.forEach((team, index) => {
         const totalScore = gameData.scores[index].reduce((a, b) => a + b, 0);
-        teamStatsHTML += `<li>Équipe ${index + 1}: <span class="team-stat-value">${totalScore} mots trouvés</span></li>`;
+        teamStatsHTML += `<li>Équipe ${index + 1}: <span class="team-stat-value">${totalScore} mots</span></li>`;
     });
     teamStatsHTML += '</ul>';
     teamStats.innerHTML = teamStatsHTML;
 
-    // 3. Cartes passées
+    // 3. Autres statistiques
     const passedStats = document.createElement('div');
     passedStats.className = 'stats-section';
+
+    const totalWordsFound = gameData.stats.cardsFoundByRound.reduce((a, b) => a + b, 0);
+    const totalCardsPlayed = totalWordsFound + gameData.stats.passedCardsCount;
+    const successRate = totalCardsPlayed > 0 ? ((totalWordsFound / totalCardsPlayed) * 100).toFixed(1) : 0;
+
     passedStats.innerHTML = `
-        <h4>Autres statistiques</h4>
+        <h4><i class="fas fa-chart-pie"></i> Autres statistiques</h4>
+        <p>Nombre de mots trouvés: <span class="stat-highlight">${totalWordsFound}</span></p>
         <p>Nombre de mots passés: <span class="stat-highlight">${gameData.stats.passedCardsCount}</span></p>
-        <p>Total de mots joués: <span class="stat-highlight">${gameData.stats.cardsFoundByRound.reduce((a, b) => a + b, 0)}</span></p>
+        <p>Taux de réussite: <span class="stat-highlight">${successRate}%</span></p>
+        <p>Total de mots joués: <span class="stat-highlight">${totalCardsPlayed}</span></p>
     `;
 
     // Assembler les statistiques

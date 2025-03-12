@@ -1,133 +1,146 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello GameController!{% endblock %}
+{% block title %}Time's Done - Le jeu de mots{% endblock %}
 
 {% block body %}
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div class="container">
-    <h1>Time's Done</h1>
+    <div class="container">
+        <div class="game-logo">
+            <h1>Time's Done</h1>
+            <div class="subtitle">Le jeu de mots à faire deviner</div>
+        </div>
 
-    <!-- Setup Phase -->
-    <div id="setup-phase" class="phase">
-        <div class="card">
-            <h2>Configuration de la partie</h2>
-            <div id="player-setup">
-                <h3>Ajouter des joueurs</h3>
-                <div class="input-group">
-                    <input type="text" id="player-name" placeholder="Nom du joueur">
-                    <button id="add-player">Ajouter</button>
+        <!-- Setup Phase -->
+        <div id="setup-phase" class="phase">
+            <div class="card">
+                <h2>Configuration de la partie</h2>
+                <div id="player-setup">
+                    <h3>Ajouter des joueurs</h3>
+                    <div class="input-group">
+                        <input type="text" id="player-name" placeholder="Nom du joueur">
+                        <button id="add-player"><i class="fas fa-user-plus"></i> Ajouter</button>
+                    </div>
+                    <ul id="player-list" class="player-list"></ul>
                 </div>
-                <ul id="player-list" class="player-list"></ul>
+                <button id="continue-to-teams" class="btn-secondary"><i class="fas fa-arrow-right"></i> Continuer</button>
             </div>
-            <button id="continue-to-teams" class="btn-secondary">Continuer</button>
         </div>
-    </div>
 
-    <!-- Team Setup Phase -->
-    <div id="team-setup-phase" class="phase hidden">
-        <div class="card">
-            <h2>Configuration des équipes</h2>
-            <div id="team-setup">
-                <div class="input-group">
-                    <label for="team-count">Nombre d'équipes:</label>
-                    <select id="team-count">
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
+        <!-- Team Setup Phase -->
+        <div id="team-setup-phase" class="phase hidden">
+            <div class="card">
+                <h2>Configuration des équipes</h2>
+                <div id="team-setup">
+                    <div class="input-group">
+                        <label for="team-count">Nombre d'équipes:</label>
+                        <select id="team-count">
+                            <option value="2">2 équipes</option>
+                            <option value="3">3 équipes</option>
+                            <option value="4">4 équipes</option>
+                        </select>
+                    </div>
+                    <div id="team-assignment-container"></div>
                 </div>
-                <div id="team-assignment-container"></div>
+                <button id="continue-to-game-setup" class="btn-secondary"><i class="fas fa-cog"></i> Configuration du jeu</button>
             </div>
-            <button id="continue-to-game-setup" class="btn-secondary">Continuer</button>
         </div>
-    </div>
 
-    <!-- Game Setup Phase -->
-    <div id="game-setup-phase" class="phase hidden">
-        <div class="card">
-            <h2>Configuration du jeu</h2>
-            <div id="game-setup">
-                <h3>Sélectionner les catégories</h3>
-                <div id="categories-container" class="categories-container"></div>
+        <!-- Game Setup Phase -->
+        <div id="game-setup-phase" class="phase hidden">
+            <div class="card">
+                <h2>Configuration du jeu</h2>
+                <div id="game-setup">
+                    <h3>Sélectionner les catégories</h3>
+                    <div id="categories-container" class="categories-container"></div>
 
-                <h3>Configuration du timer</h3>
-                <div class="timer-config">
-                    <input type="number" id="timer-seconds" min="10" max="120" value="60" placeholder="Secondes">
+                    <h3>Configuration du timer</h3>
+                    <div class="timer-config">
+                        <input type="number" id="timer-seconds" min="10" max="120" value="60" placeholder="Secondes">
+                    </div>
+
+                    <h3>Nombre de cartes par joueur</h3>
+                    <input type="number" id="cards-per-player" min="1" max="10" value="5" placeholder="Cartes par joueur">
+                </div>
+                <button id="start-game" class="btn-accent"><i class="fas fa-play"></i> Commencer la partie</button>
+            </div>
+        </div>
+
+        <!-- Game Play Phase -->
+        <div id="game-play-phase" class="phase hidden">
+            <div class="card">
+                <div class="round-info" id="round-info">Manche 1: Décrire avec des mots</div>
+                <div class="current-team" id="current-team">
+                    <i class="fas fa-users"></i> Équipe 1
                 </div>
 
-                <h3>Nombre de cartes par joueur</h3>
-                <input type="number" id="cards-per-player" min="1" max="10" value="5" placeholder="Cartes par joueur">
+                <div class="timer-display" id="timer-display">60</div>
+                <div class="timer-progress">
+                    <div id="timer-progress-fill" class="timer-progress-fill"></div>
+                </div>
+
+                <div class="cards-remaining" id="cards-remaining">
+                    <i class="fas fa-clone"></i> Cartes restantes: 0
+                </div>
+
+                <div class="timer-controls">
+                    <button id="start-timer" class="btn-accent"><i class="fas fa-play"></i> Démarrer</button>
+                    <button id="next-card" class="btn-success" disabled><i class="fas fa-check"></i> Trouvé !</button>
+                    <button id="pass-card" class="btn-secondary" disabled><i class="fas fa-forward"></i> Passer</button>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-category" id="card-category"></div>
+                    <div id="card-word">Appuyez sur Démarrer</div>
+                </div>
+
+                <button id="end-turn" class="hidden"><i class="fas fa-stop"></i> Fin du tour</button>
             </div>
-            <button id="start-game" class="btn-accent">Commencer la partie</button>
         </div>
-    </div>
 
-    <!-- Game Play Phase -->
-    <div id="game-play-phase" class="phase hidden">
-        <div class="card">
-            <div class="round-info" id="round-info">Manche 1: Décrire avec des mots</div>
-            <div class="current-team" id="current-team">Équipe 1</div>
-
-            <div class="timer-display" id="timer-display">60</div>
-            <div class="cards-remaining" id="cards-remaining">Cartes restantes: 0</div>
-            <div class="timer-controls">
-                <button id="start-timer" class="btn-accent">Démarrer</button>
-                <button id="next-card" class="btn-secondary" disabled>Carte suivante</button>
-                <button id="pass-card" class="btn-secondary" disabled>Passer</button>
+        <!-- Score Phase -->
+        <div id="score-phase" class="phase hidden">
+            <div class="card">
+                <h2>Scores</h2>
+                <table class="scores-table" id="scores-table">
+                    <thead>
+                    <tr>
+                        <th>Équipe</th>
+                        <th>Manche 1</th>
+                        <th>Manche 2</th>
+                        <th>Manche 3</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody id="scores-body"></tbody>
+                </table>
+                <button id="continue-next-round" class="btn-secondary"><i class="fas fa-forward"></i> Manche suivante</button>
+                <button id="end-game" class="btn-accent hidden"><i class="fas fa-trophy"></i> Terminer la partie</button>
             </div>
+        </div>
 
-            <div class="game-card">
-                <div class="card-category" id="card-category"></div>
-                <div id="card-word">Appuyez sur Démarrer</div>
+        <!-- Game Over Phase -->
+        <div id="game-over-phase" class="phase hidden">
+            <div class="card">
+                <h2>Fin de la partie</h2>
+                <div id="winner-display"></div>
+                <table class="scores-table" id="final-scores-table">
+                    <thead>
+                    <tr>
+                        <th>Équipe</th>
+                        <th>Manche 1</th>
+                        <th>Manche 2</th>
+                        <th>Manche 3</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody id="final-scores-body"></tbody>
+                </table>
+                <button id="new-game" class="btn-accent"><i class="fas fa-redo"></i> Nouvelle partie</button>
             </div>
-
-            <button id="end-turn" class="hidden">Fin du tour</button>
         </div>
     </div>
-
-    <!-- Score Phase -->
-    <div id="score-phase" class="phase hidden">
-        <div class="card">
-            <h2>Scores</h2>
-            <table class="scores-table" id="scores-table">
-                <thead>
-                <tr>
-                    <th>Équipe</th>
-                    <th>Manche 1</th>
-                    <th>Manche 2</th>
-                    <th>Manche 3</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody id="scores-body"></tbody>
-            </table>
-            <button id="continue-next-round" class="btn-secondary">Manche suivante</button>
-            <button id="end-game" class="btn-accent hidden">Terminer la partie</button>
-        </div>
-    </div>
-
-    <!-- Game Over Phase -->
-    <div id="game-over-phase" class="phase hidden">
-        <div class="card">
-            <h2>Fin de la partie</h2>
-            <div id="winner-display"></div>
-            <table class="scores-table" id="final-scores-table">
-                <thead>
-                <tr>
-                    <th>Équipe</th>
-                    <th>Manche 1</th>
-                    <th>Manche 2</th>
-                    <th>Manche 3</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody id="final-scores-body"></tbody>
-            </table>
-            <button id="new-game" class="btn-accent">Nouvelle partie</button>
-        </div>
-    </div>
-</div>
 
     <script type="text/javascript" src="/js/game.js"></script>
 
