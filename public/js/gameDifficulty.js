@@ -127,7 +127,7 @@ const wordsByDifficulty = {
             "Tennis", "Natation", "Cyclisme", "Boxe"
         ],
         medium: [
-            "Cricket", "Water-polo", "Ultimate frisbee", "Netball", "Futsal", "Kayak-polo", "Dodgeball",
+            "Cricket", "Water-polo", "Ultimate frisbee", "Netball", "Futsal", "Dodgeball",
             "Flag football", "Roller hockey", "Golf", "Ski", "Snowboard", "Patinage", "Surf", "Plongeon",
             "Badminton", "Tir à l'arc", "Gymnastique", "Escalade", "Escrime", "Arts martiaux", "Judo",
             "Karaté", "Taekwondo", "Athlétisme"
@@ -136,7 +136,7 @@ const wordsByDifficulty = {
             "Tchoukball", "Sepak takraw", "Hurling",
         ],
         expert: [
-            "Kayak-polo"
+"Dragon boat"
         ]
     },
 

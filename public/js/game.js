@@ -4,7 +4,8 @@
 const soundConfig = {
     // Sons par défaut
     default: {
-        'card-found': '/sounds/correct.wav',
+        'timer-alert': '/sounds/timer-alert.mp3',
+        'card-found': '/sounds/correct.mp3',
         'card-pass': '/sounds/pass.wav',
         'timer-end': '/sounds/times-up.mp3',
         'score': '/sounds/applause.wav',
@@ -14,7 +15,8 @@ const soundConfig = {
     },
     // Pack de sons futuriste
     futuristic: {
-        'card-found': '/sounds/futuristic/correct.wav',
+        'timer-alert': '/sounds/timer-alert.mp3',
+        'card-found': '/sounds/futuristic/correct.mp3',
         'card-pass': '/sounds/futuristic/pass.wav',
         'timer-end': '/sounds/futuristic/times-up.mp3',
         'score': '/sounds/futuristic/applause.wav',
@@ -24,7 +26,8 @@ const soundConfig = {
     },
     // Pack de sons comique
     funny: {
-        'card-found': '/sounds/funny/correct.wav',
+        'timer-alert': '/sounds/timer-alert.mp3',
+        'card-found': '/sounds/funny/correct.mp3',
         'card-pass': '/sounds/funny/pass.wav',
         'timer-end': '/sounds/funny/times-up.mp3',
         'score': '/sounds/funny/applause.wav',
@@ -42,6 +45,7 @@ const vibrationPatterns = {
     'score': [100, 50, 100, 50, 300],
     'next-round': [100, 100, 100],
     'game-end': [300, 100, 100, 100, 300],
+    'timer-alert': [50, 30, 50, 30, 50],
     'click': [30]
 };
 
@@ -132,14 +136,14 @@ const gameData = {
         ],
         'Sports': [
             'Football', 'Basketball', 'Rugby', 'Volleyball', 'Handball', 'Hockey sur glace', 'Baseball', 'Cricket', 'Water-polo',
-            'Ultimate frisbee', 'Netball', 'Futsal', 'Kayak-polo', 'Dodgeball', 'Flag football', 'Roller hockey', 'Tchoukball',
+            'Ultimate frisbee', 'Netball', 'Futsal', 'Dodgeball', 'Flag football', 'Roller hockey', 'Tchoukball',
             'Sepak takraw', 'Hurling', 'Quidditch',
 
             'Tennis', 'Athlétisme', 'Natation', 'Cyclisme', 'Boxe', 'Arts martiaux', 'Judo', 'Karaté', 'Taekwondo', 'Escalade',
             'Gymnastique', 'Escrime', 'Tir à l\'arc', 'Ski', 'Snowboard', 'Golf', 'Patinage', 'Surf', 'Plongeon', 'Badminton',
 
             'MMA', 'Lutte', 'Sumo', 'Kickboxing', 'Muay thai', 'Capoeira', 'Catch', 'Wing chun', 'Kendo', 'Aikido', 'Sambo',
-            'Kung-fu','Brazilian jiu-jitsu', 'Tai-chi', 'Greco-romaine', 'Pancrace', 'Krav maga', // Extrêmes et outdoor
+            'Kung-fu','Brazilian jiu-jitsu', 'Tai-chi', 'Greco-romaine', 'Pancrace', 'Krav maga',
             'Parachutisme', 'BASE jump', 'Wingsuit', 'Skateboard', 'Parkour', 'Saut à l\'élastique', 'Motocross', 'Trail',
             'Course d\'orientation', 'Rafting', 'Canyoning', 'Spéléologie', 'Alpinisme', 'Parapente', 'Deltaplane',
 
@@ -337,6 +341,17 @@ function addDynamicStyles() {
             .game-card:hover {
                 box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
             }
+            
+            /* Animation pour l'alerte de 5 secondes */
+            .timer-alert-animation {
+                animation: timerAlert 0.8s cubic-bezier(.36,.07,.19,.97) both;
+                color: var(--warning-color) !important;
+            }
+            
+            @keyframes timerAlert {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.2); color: var(--warning-color); }
+            }
         `;
         document.head.appendChild(styleSheet);
     }
@@ -459,7 +474,7 @@ function playSound(soundType) {
         let soundPath;
         switch(soundType) {
             case 'card-found':
-                soundPath = '/sounds/correct.wav';
+                soundPath = '/sounds/correct.mp3';
                 break;
             case 'card-pass':
                 soundPath = '/sounds/pass.wav';
@@ -942,10 +957,11 @@ function prepareRound() {
     // Mélanger les cartes pour cette manche (pour un ordre différent)
     shuffleArray(gameData.roundCards);
 
+    console.log(`Manche ${gameData.currentRound} préparée avec ${gameData.roundCards.length} cartes`);
+    console.log("Les cartes ont été mélangées pour assurer un ordre différent");
+
     // Réinitialiser l'index de la carte actuelle
     gameData.currentCardIndex = 0;
-
-    console.log(`Manche ${gameData.currentRound} préparée avec ${gameData.roundCards.length} cartes`);
 }
 
 // Game Play Functions
@@ -974,6 +990,9 @@ function startTimer() {
     timeLeft = gameData.timerSeconds;
     updateTimerDisplay();
 
+    // Variable pour suivre si l'alerte a été jouée
+    let alertPlayed = false;
+
     // Show first card - s'assurer que cette fonction est appelée
     showCurrentCard();
 
@@ -984,13 +1003,27 @@ function startTimer() {
         timeLeft--;
         updateTimerDisplay();
 
+        // Jouer un son d'alerte quand il reste 5 secondes
+        if (timeLeft === 5 && !alertPlayed) {
+            playSound('timer-alert');
+            alertPlayed = true;
+
+            // Ajouter une animation visuelle pour renforcer l'alerte
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) {
+                timerDisplay.classList.add('timer-alert-animation');
+                setTimeout(() => {
+                    timerDisplay.classList.remove('timer-alert-animation');
+                }, 800);
+            }
+        }
+
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             timerEnded();
         }
     }, 1000);
 }
-
 function updateTimerDisplay() {
     timerDisplay.textContent = timeLeft !== undefined ? timeLeft : gameData.timerSeconds;
 
@@ -1055,8 +1088,12 @@ function showCurrentCard() {
 
     // Effet de flip 3D pour la carte
     flipCard();
-}
 
+    // Mettre à jour la taille du texte après l'affichage de la carte
+    setTimeout(() => {
+        updateCardTextSize();
+    }, 300);
+}
 // Pour initialiser la carte 3D
 document.addEventListener('DOMContentLoaded', function() {
     // Ajouter ce code à la fin de votre fonction initGame()
@@ -1071,6 +1108,10 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         setupCardStructure();
     }, 500);
+});
+
+window.addEventListener('resize', function() {
+    updateCardTextSize();
 });
 
 function nextCard() {
@@ -1227,6 +1268,26 @@ function endTurn() {
     cardCategory.textContent = '';
     cardWord.textContent = 'Appuyez sur Démarrer';
 
+    // Avancer à la carte suivante pour que le prochain joueur ait une nouvelle carte
+    if (gameData.roundCards.length > 1) {
+        // Sauvegarde temporaire de la carte actuelle
+        const currentCard = gameData.roundCards[gameData.currentCardIndex];
+
+        // Supprimer la carte de sa position actuelle
+        gameData.roundCards.splice(gameData.currentCardIndex, 1);
+
+        // L'ajouter plus loin dans le paquet (pas tout à la fin pour éviter qu'elle revienne trop vite)
+        // Par exemple, l'insérer après 2-3 cartes ou à une position aléatoire
+        const newPosition = Math.min(
+            gameData.currentCardIndex + 2 + Math.floor(Math.random() * 3),
+            gameData.roundCards.length
+        );
+
+        gameData.roundCards.splice(newPosition, 0, currentCard);
+
+        console.log(`Carte déplacée de la position ${gameData.currentCardIndex} à la position ${newPosition}`);
+    }
+
     // Passer à l'équipe suivante
     gameData.currentTeam = (gameData.currentTeam + 1) % gameData.teams.length;
 
@@ -1258,7 +1319,6 @@ function endTurn() {
     updateCurrentTeam();
     updateCardsRemaining();
 }
-
 function updateRoundInfo() {
     roundInfo.textContent = gameData.roundDescriptions[gameData.currentRound - 1];
 }
@@ -1299,12 +1359,15 @@ function showScores() {
 
         // Ajouter l'information sur qui commencera la prochaine manche
         if (gameData.currentRound < 3) {
-            const nextTeam = gameData.teams[gameData.currentTeam];
+            // L'équipe suivante commencera la prochaine manche
+            const nextTeamIndex = (gameData.currentTeam + 1) % gameData.teams.length;
+            const nextTeam = gameData.teams[nextTeamIndex];
             const nextPlayer = nextTeam[gameData.currentPlayerIndex];
+
             messageDiv.innerHTML = `
                 <p>Tous les mots ont été joués pour la manche ${gameData.currentRound}!</p>
                 <p class="next-player-info"><i class="fas fa-user-circle"></i> La manche ${gameData.currentRound + 1} commencera avec 
-                <strong>${nextPlayer}</strong> (Équipe ${gameData.currentTeam + 1})</p>
+                <strong>${nextPlayer}</strong> (Équipe ${nextTeamIndex + 1})</p>
             `;
         } else {
             messageDiv.innerHTML = `<p>Tous les mots ont été joués pour la manche ${gameData.currentRound}!</p>`;
@@ -1313,7 +1376,6 @@ function showScores() {
         document.querySelector('#score-phase .card').insertBefore(messageDiv, document.getElementById('scores-table'));
     }
 }
-
 function renderScores() {
     scoresBody.innerHTML = '';
 
@@ -1357,8 +1419,12 @@ function renderScores() {
 
 // Correction de la fonction nextRound pour éviter le démarrage automatique du timer
 function nextRound() {
-    // Passer à la manche suivante mais garder l'équipe et le joueur actuels
+    // Passer à la manche suivante
     gameData.currentRound++;
+
+    // Faire commencer la nouvelle manche par l'équipe suivante
+    // (donc pas celle qui a terminé la dernière manche)
+    gameData.currentTeam = (gameData.currentTeam + 1) % gameData.teams.length;
 
     // Préparer les cartes pour la nouvelle manche
     prepareRound();
@@ -1583,6 +1649,10 @@ function setupCardStructure() {
     const cardBack = document.createElement('div');
     cardBack.className = 'card-back';
 
+    // Créer un conteneur pour le contenu de la carte pour un meilleur contrôle du layout
+    const cardContent = document.createElement('div');
+    cardContent.className = 'card-content';
+
     // Recréer les éléments de catégorie et mot
     const newCategory = document.createElement('div');
     newCategory.id = 'card-category';
@@ -1591,11 +1661,13 @@ function setupCardStructure() {
 
     const newWord = document.createElement('div');
     newWord.id = 'card-word';
+    newWord.className = 'card-word';
     newWord.innerHTML = originalContent.word;
 
-    // Ajouter les éléments dans l'ordre correct
-    cardFront.appendChild(newCategory);
-    cardFront.appendChild(newWord);
+    // Ajoutez le conteneur de contenu à la carte
+    cardContent.appendChild(newCategory);
+    cardContent.appendChild(newWord);
+    cardFront.appendChild(cardContent);
 
     // Ajouter un dos de carte
     const cardBackContent = document.createElement('div');
@@ -1609,8 +1681,10 @@ function setupCardStructure() {
 
     // Ajouter effet de tilt au survol
     setupTiltEffect(gameCard);
-}
 
+    // Vérifier et ajuster la taille du texte pour les mots longs
+    updateCardTextSize();
+}
 // Effet d'inclinaison au survol (tilt)
 function setupTiltEffect(card) {
     card.addEventListener('mousemove', e => {
@@ -1872,6 +1946,61 @@ function enhanceCategoryCheckboxes() {
             }
         });
     });
+}
+
+function updateCardTextSize() {
+    const cardWord = document.getElementById('card-word');
+    const cardCategory = document.getElementById('card-category');
+
+    if (!cardWord || !cardWord.textContent) return;
+
+    // Nettoyer les classes précédentes
+    cardWord.classList.remove('long-text', 'film-title', 'long-expression', 'extra-long-word');
+
+    const text = cardWord.textContent.trim();
+
+    // Détecter le type de contenu
+    if (text.length > 25) {
+        cardWord.classList.add('extra-long-word');
+    } else if (text.length > 20) {
+        cardWord.classList.add('long-text');
+    }
+
+    // Détection spécifique pour les films
+    if (cardCategory && cardCategory.textContent.includes('Films')) {
+        cardWord.classList.add('film-title');
+    }
+
+    // Détection des expressions avec des espaces (comme "Le Seigneur des Anneaux")
+    if (text.split(' ').length > 3) {
+        cardWord.classList.add('long-expression');
+    }
+
+    // Vérifier si le texte déborde et ajuster si nécessaire
+    checkTextOverflow(cardWord);
+}
+
+function checkTextOverflow(element) {
+    // Clone l'élément pour mesurer sa hauteur sans affecter l'affichage
+    const clone = element.cloneNode(true);
+    clone.style.visibility = 'hidden';
+    clone.style.position = 'absolute';
+    document.body.appendChild(clone);
+
+    // Mesurer la hauteur de l'élément et du contenu
+    const elementHeight = clone.offsetHeight;
+    const container = element.closest('.card-front') || element.closest('.game-card');
+
+    if (container) {
+        const containerHeight = container.offsetHeight;
+        // Si le texte est trop grand pour le conteneur
+        if (elementHeight > containerHeight * 0.7) {
+            element.style.fontSize = 'calc(1rem + 1vw)'; // Ajuster dynamiquement
+        }
+    }
+
+    // Nettoyer
+    document.body.removeChild(clone);
 }
 
 // Initialiser le système de sons lors du chargement
