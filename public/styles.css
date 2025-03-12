@@ -1,0 +1,554 @@
+@media (min-width: 768px) {
+    .container {
+        padding: 2rem;
+    }
+
+    .timer-controls {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .timer-controls button {
+        flex: 1;
+    }
+}.btn-disabled {
+    opacity: 0.5;
+    background-color: #cccccc !important;
+    cursor: not-allowed !important;
+}
+
+.cards-remaining {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}/* Interrupteur pour les sons */
+.sound-toggle {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    justify-content: center;
+}
+
+.sound-toggle span {
+    margin-left: 0.5rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}:root {
+     --primary-color: #6200ee;
+     --secondary-color: #03dac6;
+     --background-color: #f5f5f5;
+     --card-color: #ffffff;
+     --text-color: #333333;
+     --accent-color: #ff4081;
+     --success-color: #4caf50;
+     --error-color: #f44336;
+     --warning-color: #ff9800;
+ }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.card {
+    background-color: var(--card-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+input, select, button {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5000d6;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background-color: #00c4b4;
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+}
+
+.btn-accent:hover {
+    background-color: #f03b75;
+}
+
+.player-list, .team-list {
+    list-style-type: none;
+}
+
+.player-list li, .team-list li {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-list li button, .team-list li button {
+    width: auto;
+    padding: 0.4rem 0.8rem;
+    margin: 0;
+    background-color: var(--error-color);
+}
+
+.timer-display {
+    font-size: 3rem;
+    text-align: center;
+    margin: 1rem 0;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.game-card {
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 2rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: white;
+}
+
+.card-category {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.scores-table th, .scores-table td {
+    padding: 0.8rem;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.scores-table th {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.current-team {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.round-info {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.categories-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.category-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.category-checkbox input {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.timer-config {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timer-config input {
+    margin-bottom: 0;
+}
+
+.team-assignment {
+    margin-bottom: 1rem;
+}
+
+.team-assignment select {
+    margin-bottom: 0.5rem;
+}
+
+.player-team-assignment {
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.player-team-assignment label {
+    margin-right: 1rem;
+    min-width: 120px;
+}
+
+.player-team-assignment select {
+    flex: 1;
+}
+
+.team-players-list {
+    list-style-type: none;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--primary-color);
+    padding-left: 0.5rem;
+}
+
+.team-players-list li {
+    padding: 0.4rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    margin-bottom: 0.3rem;
+    border-radius: 4px;
+}
+
+/* Animations */
+.card-found-animation {
+    animation: card-found 0.5s ease;
+}
+
+.card-pass-animation {
+    animation: card-pass 0.5s ease;
+}
+
+.timer-end-animation {
+    animation: timer-end 1s ease;
+}
+
+.animate-scores {
+    animation: fadeIn 1s ease;
+}
+
+/* Animation pour les mots trouvés */
+@keyframes card-found {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); background-color: rgba(76, 175, 80, 0.3); }
+    100% { transform: scale(1); }
+}
+
+/* Animation pour les mots passés */
+@keyframes card-pass {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(20px); opacity: 0.5; }
+    100% { transform: translateX(0); }
+}
+
+/* Animation pour la fin du timer */
+@keyframes timer-end {
+    0% { color: var(--primary-color); }
+    50% { color: var(--error-color); transform: scale(1.2); }
+    100% { color: var(--primary-color); }
+}
+
+/* Animation de fade in */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.pulse-animation {
+    animation: pulse 0.8s infinite;
+}
+
+/* Barre de progression du timer */
+.timer-progress {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.timer-progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 1s linear, background-color 0.5s ease;
+}
+
+/* Styles pour les statistiques */
+.game-stats {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+}
+
+.game-stats h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.stats-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.stats-section {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.stats-section h4 {
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+    font-size: 1rem;
+}
+
+.stats-chart {
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    margin-bottom: 0.5rem;
+}
+
+.chart-bar {
+    width: 30px;
+    background-color: var(--primary-color);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    min-height: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.chart-bar .bar-value {
+    position: absolute;
+    top: -20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.9rem;
+}
+
+.team-stats-list {
+    list-style-type: none;
+}
+
+.team-stats-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.team-stat-value {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-highlight {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.end-round-message {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--success-color);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Style pour le message toast */
+.toast-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.5s ease;
+    font-weight: bold;
+    text-align: center;
+    max-width: 80%;
+}
+
+@keyframes slideDown {
+    from {
+        top: -50px;
+        opacity: 0;
+    }
+    to {
+        top: 20px;
+        opacity: 1;
+    }
+}
+
+.toast-message.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.next-player-info {
+    margin-top: 8px;
+    font-style: italic;
+    color: var(--primary-color);
+}
+
+.end-round-message {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--success-color);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    animation: fadeIn 0.5s ease;
+}
