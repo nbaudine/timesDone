@@ -1120,14 +1120,331 @@ input:checked + .slider:before {
         padding: 0.8rem;
     }
 
+    /* Ajoutez ce CSS à votre fichier de styles */
+
+    /* Configuration pour les animations 3D */
     .game-card {
-        min-height: 150px;
-        font-size: 1.5rem;
-        padding: 1.5rem;
+        perspective: 1000px;
+        transform-style: preserve-3d;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    .card-flip .card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: var(--border-radius);
+    }
+
+    .card-front {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 2px solid var(--primary-color);
+        color: var(--text-color);
+    }
+
+    .card-back {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 2px solid var(--primary-color);
+        color: var(--text-color);
+        transform: rotateY(180deg);
+    }
+
+    /* Effet de lueur au survol */
+    .game-card:hover .card-front,
+    .game-card:hover .card-back {
+        box-shadow: 0 0 20px rgba(255, 61, 61, 0.5);
+    }
+
+    /* Effet 3D d'inclinaison au survol (tilt) */
+    .game-card.tilt-effect {
+        transition: transform 0.5s ease;
+    }
+
+    /* Animation de retournement de carte */
+    @keyframes flipIn {
+        0% {
+            transform: rotateY(90deg) scale(0.9);
+            opacity: 0;
+        }
+        70% {
+            transform: rotateY(-20deg) scale(1.05);
+            opacity: 1;
+        }
+        100% {
+            transform: rotateY(0deg) scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes flipOut {
+        0% {
+            transform: rotateY(0deg) scale(1);
+            opacity: 1;
+        }
+        30% {
+            transform: rotateY(20deg) scale(1.05);
+            opacity: 1;
+        }
+        100% {
+            transform: rotateY(-90deg) scale(0.9);
+            opacity: 0;
+        }
+    }
+
+    .flip-in {
+        animation: flipIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .flip-out {
+        animation: flipOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Animation pour carte trouvée */
+    @keyframes foundCard3D {
+        0% { transform: scale3d(1, 1, 1); }
+        40% {
+            transform: scale3d(1.1, 1.1, 1.1) rotateZ(-5deg);
+            box-shadow: 0 0 30px var(--success-color);
+        }
+        70% {
+            transform: scale3d(0.95, 0.95, 0.95) rotateZ(5deg);
+        }
+        100% { transform: scale3d(1, 1, 1); }
+    }
+
+    .card-found-animation {
+        animation: foundCard3D 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Animation pour carte passée */
+    @keyframes passCard3D {
+        0% {
+            transform: translate3d(0, 0, 0) rotateY(0deg);
+            opacity: 1;
+        }
+        30% {
+            transform: translate3d(60px, 0, -100px) rotateY(20deg);
+            opacity: 0.5;
+        }
+        60% {
+            transform: translate3d(-60px, 0, -100px) rotateY(-20deg);
+            opacity: 0.3;
+        }
+        100% {
+            transform: translate3d(0, 0, 0) rotateY(0deg);
+            opacity: 1;
+        }
+    }
+
+    .card-pass-animation {
+        animation: passCard3D 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
     }
 
     .scores-table th, .scores-table td {
         padding: 0.7rem 0.5rem;
         font-size: 0.9rem;
     }
+}
+
+/* Styles pour les paramètres sonores */
+
+.sound-settings {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.sound-settings.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.settings-card {
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-card h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-size: 1.4rem;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-row label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.settings-row input[type="range"] {
+    flex: 1;
+    max-width: 200px;
+    margin-left: 1rem;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.settings-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(255, 61, 61, 0.5);
+}
+
+.settings-row select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    outline: none;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.settings-actions button {
+    flex: 1;
+    margin: 0 0.5rem;
+}
+
+/* Bouton pour ouvrir les paramètres sonores */
+.sound-settings-button {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50%;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-color);
+    margin-left: 0.5rem;
+    cursor: pointer;
+    padding: 0 !important;
+    font-size: 0.8rem;
+}
+
+.sound-settings-button:hover {
+    background-color: var(--primary-color);
+    transform: rotate(30deg);
+}
+
+.category-checkbox {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-checkbox:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.category-checkbox input[type="checkbox"]:checked + label {
+    color: var(--primary-color);
+    font-weight: 600;
 }

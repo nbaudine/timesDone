@@ -1,0 +1,78 @@
+/* Styles pour le sélecteur de difficulté */
+.difficulty-selector {
+    margin: 1.5rem 0;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius);
+    padding: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.difficulty-selector h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.difficulty-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.difficulty-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    padding: 0.7rem 0.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.difficulty-btn:hover {
+    background-color: rgba(255, 61, 61, 0.1);
+    transform: translateY(-2px);
+}
+
+.difficulty-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 61, 61, 0.3);
+}
+
+.difficulty-description {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.difficulty-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.difficulty-checkbox input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.7rem;
+    accent-color: var(--primary-color);
+}
+
+/* Animation pour les changements de difficulté */
+@keyframes difficultyChange {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.difficulty-change {
+    animation: difficultyChange 0.5s ease;
+}

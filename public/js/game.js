@@ -1,15 +1,212 @@
 // Game Data
+
+// Configuration des sons
+const soundConfig = {
+    // Sons par défaut
+    default: {
+        'card-found': '/sounds/correct.wav',
+        'card-pass': '/sounds/pass.wav',
+        'timer-end': '/sounds/times-up.mp3',
+        'score': '/sounds/applause.wav',
+        'next-round': '/sounds/next-round.mp3',
+        'game-end': '/sounds/game-end.mp3',
+        'click': '/sounds/click.wav'
+    },
+    // Pack de sons futuriste
+    futuristic: {
+        'card-found': '/sounds/futuristic/correct.wav',
+        'card-pass': '/sounds/futuristic/pass.wav',
+        'timer-end': '/sounds/futuristic/times-up.mp3',
+        'score': '/sounds/futuristic/applause.wav',
+        'next-round': '/sounds/futuristic/next-round.mp3',
+        'game-end': '/sounds/futuristic/game-end.mp3',
+        'click': '/sounds/futuristic/click.wav'
+    },
+    // Pack de sons comique
+    funny: {
+        'card-found': '/sounds/funny/correct.wav',
+        'card-pass': '/sounds/funny/pass.wav',
+        'timer-end': '/sounds/funny/times-up.mp3',
+        'score': '/sounds/funny/applause.wav',
+        'next-round': '/sounds/funny/next-round.mp3',
+        'game-end': '/sounds/funny/game-end.mp3',
+        'click': '/sounds/funny/click.wav'
+    }
+};
+
+// Configuration des vibrations
+const vibrationPatterns = {
+    'card-found': [100, 50, 100],
+    'card-pass': [50, 30, 50],
+    'timer-end': [200, 100, 200, 100, 200],
+    'score': [100, 50, 100, 50, 300],
+    'next-round': [100, 100, 100],
+    'game-end': [300, 100, 100, 100, 300],
+    'click': [30]
+};
+
 const gameData = {
     categories: {
-        'Animaux': ['Chien', 'Chat', 'Cheval', 'Fourmi', 'Lion', 'Tigre', 'Éléphant', 'Girafe', 'Singe','Cerf','Sardine','Saumon'],
-        'Chanteurs': ['Soprano', 'Nekfeu', 'Adele', 'Beyoncé', 'Ed Sheeran', 'Taylor Swift', 'Drake', 'Rihanna', 'Justin Bieber', 'Ariana Grande','BigFlo et Oli'],
-        'Films': ['Titanic', 'Star Wars', 'Le Roi Lion', 'Avatar', 'Matrix', 'Avengers', 'Jurassic Park', 'Inception','Divergente'],
-        'Personnages': ['Batman', 'Spider-Man', 'Mickey Mouse', 'Donald Duck', 'Superman', 'Wonder Woman', 'Homer Simpson', 'Mario', 'Dark Vador', 'James Bond','Gollum'],
-        'Sports': ['Football', 'Basketball', 'Tennis', 'Rugby', 'Natation', 'Athlétisme', 'Volleyball', 'Ski', 'Snowboard', 'Golf', 'Cyclisme','Echec'],
-        'Pays': ['France', 'États-Unis', 'Japon', 'Brésil', 'Australie', 'Italie', 'Canada', 'Espagne', 'Russie', 'Chine'],
-        'Métiers': ['Médecin', 'Enseignant', 'Pilote', 'Pompier', 'Policier', 'Boulanger', 'Informaticien', 'Avocat', 'Cuisinier', 'Architecte'],
-        'Objets': ['Téléphone', 'Ordinateur', 'Table', 'Chaise', 'Livre', 'Stylo', 'Horloge', 'Voiture', 'Télévision', 'Miroir']
+        'Animaux': [
+            'Chien', 'Chat', 'Cheval', 'Lion', 'Tigre', 'Éléphant', 'Girafe', 'Singe', 'Cerf', 'Loup', 'Ours', 'Renard', 'Zèbre', 'Rhinocéros',
+            'Panda', 'Koala', 'Kangourou', 'Chameau', 'Écureuil', 'Dauphin', 'Baleine', 'Ornithorynque', 'Blaireau', 'Lynx', 'Loutre', 'Sanglier',
+            'Guépard', 'Hyène', 'Panthère', 'Morse', 'Bison', 'Caribou', 'Tapir', 'Hippopotame', 'Léopard', 'Yack', 'Wombat', 'Wallaby',
+            'Ouistiti', 'Mandrill', 'Gorille', 'Chimpanzé', 'Raton laveur', 'Mouflon', 'Bélier', 'Chamois', 'Martre', 'Hermine', 'Aigle', 'Hibou', 'Manchot', 'Perroquet', 'Colibri', 'Autruche', 'Toucan', 'Flamant rose', 'Chouette', 'Paon', 'Oiseau-mouche',
+            'Canard', 'Oie', 'Cygne', 'Albatros', 'Condor', 'Vautour', 'Ara', 'Perruche', 'Pingouin', 'Oiseau-lyre', 'Faisan', 'Moineau',
+            'Merle', 'Corbeau', 'Pie', 'Martin-pêcheur', 'Grue', 'Héron', 'Grue',
+
+            'Crocodile', 'Serpent', 'Caméléon', 'Tortue', 'Iguane', 'Gecko', 'Salamandre', 'Grenouille', 'Crapaud', 'Lézard', 'Anaconda',
+            'Python', 'Vipère', 'Cobra', 'Komodo', 'Alligator', 'Serpent de mer', 'Tortue géante', 'Caïman', 'Triton',
+
+            'Fourmi', 'Abeille', 'Papillon', 'Scarabée', 'Libellule', 'Mante religieuse', 'Guêpe', 'Coccinelle', 'Criquet', 'Sauterelle',
+            'Cafard', 'Termite', 'Scorpion', 'Araignée', 'Mouche', 'Moustique', 'Ver de terre', 'Escargot', 'Limace', 'Méduse',
+
+            'Sardine', 'Saumon', 'Requin', 'Thon', 'Carpe', 'Esturgeon', 'Raie', 'Anguille', 'Piranha', 'Poisson-clown', 'Mérou', 'Bar',
+            'Truite', 'Maquereau', 'Anchois', 'Sole', 'Marlin', 'Barracuda', 'Espadon', 'Raie manta'
+        ],
+        'Pays': [
+            'France', 'Allemagne', 'Royaume-Uni', 'Italie', 'Espagne', 'Russie', 'Ukraine', 'Pologne', 'Roumanie', 'République Tchèque',
+            'Portugal', 'Suède', 'Norvège', 'Finlande', 'Danemark', 'Pays-Bas', 'Belgique', 'Suisse', 'Autriche', 'Grèce', 'Hongrie',
+            'Serbie', 'Croatie', 'Bulgarie', 'Slovaquie', 'Irlande', 'Islande', 'Luxembourg', 'Chypre', 'Malte',
+
+            'États-Unis', 'Canada', 'Brésil', 'Argentine', 'Mexique', 'Colombie', 'Chili', 'Pérou', 'Venezuela', 'Équateur',
+            'Cuba', 'République Dominicaine', 'Jamaïque', 'Costa Rica', 'Panama', 'Uruguay', 'Paraguay', 'Bolivie', 'Honduras', 'El Salvador',
+
+            'Chine', 'Japon', 'Inde', 'Corée du Sud', 'Turquie', 'Iran', 'Indonésie', 'Thaïlande', 'Malaisie', 'Vietnam',
+            'Philippines', 'Pakistan', 'Bangladesh', 'Sri Lanka', 'Singapour', 'Kazakhstan', 'Ouzbékistan', 'Taïwan', 'Mongolie', 'Népal',
+
+            'Afrique du Sud', 'Égypte', 'Nigeria', 'Kenya', 'Maroc', 'Algérie', 'Éthiopie', 'Ghana', 'Tanzanie', 'Cameroun',
+            'Angola', 'Zimbabwe', 'Maurice', 'Madagascar', 'Sénégal', 'Tunisie', 'Côte d\'Ivoire', 'Gabon', 'République Démocratique du Congo', 'Mozambique',
+
+            'Australie', 'Nouvelle-Zélande', 'Fidji', 'Papouasie-Nouvelle-Guinée', 'Îles Salomon', 'Vanuatu', 'Samoa', 'Tonga'
+        ],
+        'Objets': [
+            'Téléphone', 'Ordinateur', 'Tablette', 'Écouteurs', 'Drone', 'Console de jeux', 'Appareil photo', 'Caméra', 'Smartwatch',
+            'Enceinte intelligente', 'Casque VR', 'Routeur', 'Batterie externe', 'Clé USB', 'Disque dur', 'Imprimante', 'Scanner',
+            'Projecteur', 'Kindle', 'Montre connectée',
+
+            'Table', 'Chaise', 'Canapé', 'Lit', 'Armoire', 'Bibliothèque', 'Bureau', 'Commode', 'Étagère', 'Miroir', 'Lampe',
+            'Suspension', 'Applique', 'Horloge', 'Tapis', 'Coussin', 'Paravent', 'Buffet', 'Console', 'Tabouret',
+
+            'Réfrigérateur', 'Four', 'Micro-ondes', 'Machine à café', 'Grille-pain', 'Mixeur', 'Bouilloire', 'Robot cuiseur',
+            'Machine à pain', 'Machine à espresso', 'Ventilateur', 'Climatiseur', 'Aspirateur', 'Fer à repasser', 'Machine à laver',
+            'Sèche-linge', 'Lave-vaisselle', 'Hotte', 'Plaque de cuisson', 'Robot multifonction',
+
+            'Marteau', 'Tournevis', 'Perceuse', 'Scie', 'Clé', 'Niveau', 'Mètre', 'Pince', 'Échelle', 'Établi', 'Ponceuse',
+            'Tronçonneuse', 'Visseuse', 'Compresseur', 'Chalumeau', 'Meuleuse', 'Soudure', 'Multimètre', 'Testeur', 'Câble',
+
+            'Lunettes', 'Sac', 'Valise', 'Portefeuille', 'Montre', 'Parapluie', 'Stylo', 'Livre', 'Clés', 'Chargeur', 'Bouteille',
+            'Gourde', 'Sac à dos', 'Trousse', 'Étui', 'Porte-documents', 'Ceinture', 'Chapeau', 'Écharpe', 'Gants',
+
+            'Guitare', 'Piano', 'Violon', 'Ballon', 'Raquette', 'Jeu de société', 'Vélo', 'Skateboard', 'Console', 'Manette',
+            'Carte à jouer', 'Puzzle', 'Poupée', 'Peluche', 'Drone', 'Jumelles', 'Télescope', 'Microscope', 'Palette', 'Pinceau'
+        ],
+        'Métiers': [
+            'Médecin', 'Infirmier', 'Chirurgien', 'Dentiste', 'Psychologue', 'Pharmacien', 'Vétérinaire', 'Physiothérapeute',
+            'Nutritionniste', 'Sage-femme', 'Radiologue', 'Psychiatre', 'Orthophoniste', 'Nutritionniste', 'Thérapeute', 'Opticien',
+            'Ambulancier', 'Technicien de laboratoire', 'Diététicien', 'Ergothérapeute',
+
+            'Enseignant', 'Professeur', 'Directeur d\'école', 'Professeur des universités', 'Instituteur', 'Conseiller pédagogique',
+            'Formateur', 'Documentaliste', 'Surveillant', 'Animateur', 'Coach scolaire', 'Orthopédagogue', 'Tuteur', 'Bibliothécaire',
+            'Inspecteur académique', 'Éducateur spécialisé', 'Conseiller d\'orientation', 'Professeur de langue', 'Chercheur', 'Archiviste',
+
+            'Informaticien', 'Développeur', 'Ingénieur logiciel', 'Data scientist', 'Architecte réseau', 'Cybersécurité',
+            'Concepteur UX/UI', 'Analyste système', 'Administrateur base de données', 'Cloud architect', 'Technicien', 'Expert en IA',
+            'Programmeur', 'Architecte', 'Ingénieur système', 'Technicien réseau', 'Consultant IT', 'Testeur logiciel', 'Product manager',
+            'Responsable innovation',
+
+            'Artiste', 'Designer', 'Graphiste', 'Photographe', 'Musicien', 'Écrivain', 'Illustrateur', 'Directeur artistique',
+            'Architecte d\'intérieur', 'Chef décorateur', 'Styliste', 'Créateur de mode', 'Scénographe', 'Monteur vidéo', 'Réalisateur',
+            'Compositeur', 'Acteur', 'Street artiste', 'Sculpteur', 'Céramiste',
+
+            'Avocat', 'Comptable', 'Banquier', 'Économiste', 'Trader', 'Expert-comptable', 'Consultant', 'Auditeur', 'Assureur',
+            'Gestionnaire de patrimoine', 'Courtier', 'Analyste financier', 'Directeur commercial', 'Responsable marketing', 'Risk manager',
+            'Chargé de relations clients', 'Gestionnaire de projet', 'Juriste', 'Business developer', 'Négociateur',
+
+            'Pilote', 'Pompier', 'Policier', 'Boulanger', 'Cuisinier', 'Chef', 'Astronaute', 'Mécanicien', 'Électricien', 'Plombier',
+            'Chauffeur', 'Agriculteur', 'Jardinier', 'Pâtissier', 'Boucher', 'Charpentier', 'Soudeur', 'Maçon', 'Peintre', 'Carreleur',
+
+            'Serveur', 'Barman', 'Steward', 'Hôtesse de l\'air', 'Guide touristique', 'Réceptionniste', 'Agent de sécurité',
+            'Coiffeur', 'Esthéticien', 'Masseur', 'Toiletteur', 'Soigneur', 'Animateur socioculturel', 'Conseiller', 'Coach sportif',
+            'Manager', 'Organisateur d\'événements', 'Wedding planner', 'Community manager', 'Influenceur'
+        ],
+        'Sports': [
+            'Football', 'Basketball', 'Rugby', 'Volleyball', 'Handball', 'Hockey sur glace', 'Baseball', 'Cricket', 'Water-polo',
+            'Ultimate frisbee', 'Netball', 'Futsal', 'Kayak-polo', 'Dodgeball', 'Flag football', 'Roller hockey', 'Tchoukball',
+            'Sepak takraw', 'Hurling', 'Quidditch',
+
+            'Tennis', 'Athlétisme', 'Natation', 'Cyclisme', 'Boxe', 'Arts martiaux', 'Judo', 'Karaté', 'Taekwondo', 'Escalade',
+            'Gymnastique', 'Escrime', 'Tir à l\'arc', 'Ski', 'Snowboard', 'Golf', 'Patinage', 'Surf', 'Plongeon', 'Badminton',
+
+            'MMA', 'Lutte', 'Sumo', 'Kickboxing', 'Muay thai', 'Capoeira', 'Catch', 'Wing chun', 'Kendo', 'Aikido', 'Sambo',
+            'Kung-fu','Brazilian jiu-jitsu', 'Tai-chi', 'Greco-romaine', 'Pancrace', 'Krav maga', // Extrêmes et outdoor
+            'Parachutisme', 'BASE jump', 'Wingsuit', 'Skateboard', 'Parkour', 'Saut à l\'élastique', 'Motocross', 'Trail',
+            'Course d\'orientation', 'Rafting', 'Canyoning', 'Spéléologie', 'Alpinisme', 'Parapente', 'Deltaplane',
+
+            'Voile', 'Canoë-kayak', 'Aviron', 'Windsurf', 'Kitesurf', 'Paddle', 'Planche à voile', 'Jet-ski', 'Pêche',
+            'Plongée sous-marine', 'Aviron', 'Stand-up paddle', 'Dragon boat',
+
+            'Billard', 'Snooker', 'Fléchettes', 'Bowling', 'Pétanque', 'Tir sportif', 'Curling', 'Croquet', 'Échecs',
+            'Go', 'Poker sportif', 'Disc golf',
+
+            'Équitation', 'Course automobile', 'Moto GP', 'Formule 1', 'Karting', 'Rallye', 'Trial', 'Polo',
+            'Course de chevaux', 'Drift', 'Enduro',
+
+            'E-sport', 'Ultimate', 'Lasergame', 'Paintball', 'Bubble foot', 'Drone racing', 'Escalade sur glace',
+            'Slackline', 'Padel', 'Hockey subaquatique', 'Roller derby', 'Crossfit', 'Strongman'
+        ],
+        'Chanteurs': [
+            'Soprano', 'Nekfeu', 'BigFlo et Oli', 'Julien Doré', 'Angèle', 'Stromae', 'Indila', 'Maître Gims', 'Louane', 'Zaz',
+            'Amir', 'Matt Pokora', 'Jean-Jacques Goldman', 'Charles Aznavour', 'Edith Piaf', 'Jacques Brel', 'Johnny Hallyday',
+            'Michel Berger', 'France Gall', 'Laurent Voulzy',
+
+            'Adele', 'Beyoncé', 'Ed Sheeran', 'Taylor Swift', 'Drake', 'Rihanna', 'Justin Bieber', 'Ariana Grande',
+            'Michael Jackson', 'Lady Gaga', 'Shakira', 'Bruno Mars', 'Elton John', 'Katy Perry', 'The Weeknd', 'Dua Lipa',
+            'Coldplay', 'Sia', 'Eminem', 'Madonna',
+
+            'Radiohead', 'Muse', 'Coldplay', 'Arctic Monkeys', 'Green Day', 'Imagine Dragons', 'Twenty One Pilots',
+            'Foo Fighters', 'Red Hot Chili Peppers', 'Linkin Park',
+
+            'Kendrick Lamar', 'Post Malone', 'Travis Scott', 'J. Cole', 'Kanye West', 'Jay-Z', '50 Cent', 'Snoop Dogg',
+            'Chance the Rapper', 'Drake',
+
+            'Bruno Mars', 'Dua Lipa', 'Harry Styles', 'Billie Eilish', 'Selena Gomez', 'Charlie Puth', 'Sam Smith',
+            'Ed Sheeran', 'Maroon 5', 'Shawn Mendes'
+        ],
+        'Films': [
+            'Intouchables', 'Amélie Poulain', 'La Vie d\'Adèle', 'Astérix et Obélix', 'Les Intouchables', 'La Haine', 'Bienvenue chez les Ch\'tis',
+            'Le Fabuleux Destin d\'Amélie Poulain', 'Martial', 'OSS 117',
+
+            'Titanic', 'Star Wars', 'Le Roi Lion', 'Avatar', 'Matrix', 'Avengers', 'Jurassic Park', 'Inception', 'Divergente', 'Le Seigneur des Anneaux', 'Interstellar', 'Gladiator', 'Pirates des Caraïbes', 'Forrest Gump',
+            'Le Parrain', 'Shrek', 'Fast and Furious', 'Le Monde de Nemo',
+
+            'Toy Story', 'Le Roi Lion', 'La Reine des Neiges', 'Monstres & Cie', 'Le Monde de Dory', 'Kung Fu Panda',
+            'Les Indestructibles', 'Raiponce', 'Coco', 'Big Hero 6',
+
+            'Blade Runner', 'Dune', 'Alien', 'Predator', 'Terminator', 'Ex Machina', 'Arrival', 'Interstellar', 'Gravity',
+            'Edge of Tomorrow',
+
+            'Mission Impossible', 'John Wick', 'Mad Max', 'Jason Bourne', 'Spider-Man', 'Batman', 'Superman', 'Transformers',
+            'Pacific Rim', 'Taken'
+        ],
+        'Personnages': [
+            'Batman', 'Spider-Man', 'Superman', 'Wonder Woman', 'Iron Man', 'Capitaine America', 'Thor', 'Hulk', 'Black Panther',
+            'Aquaman', 'Flash', 'Green Lantern', 'Wolverine', 'Deadpool',
+
+            'Mickey Mouse', 'Donald Duck', 'Homer Simpson', 'Bart Simpson', 'Mario', 'Sonic', 'Pikachu', 'Bob l\'Éponge',
+            'Scooby-Doo', 'Bugs Bunny', 'Tom et Jerry', 'Les Pokémon',
+
+            'Dark Vador', 'James Bond', 'Gollum', 'Jack Sparrow', 'Indiana Jones', 'Neo', 'Sherlock Holmes',
+            'Luke Skywalker', 'Princesse Leia', 'Hermione Granger', 'Ron Weasley',
+
+            'Napoléon', 'Cléopâtre', 'Albert Einstein', 'Marie Curie', 'Gandalf', 'Merlin', 'Zeus', 'Achille', 'Robin des Bois',
+            'Don Quichotte',
+
+            'Lara Croft', 'Kratos', 'Master Chief', 'Link', 'Samus Aran', 'Ezio Auditore', 'Cloud Strife', 'Solid Snake',
+            'Gordon Freeman', 'Nathan Drake'
+        ]
     },
+    // Reste de la structure du jeu (inchangé)
     players: [],
     teams: [],
     selectedCategories: [],
@@ -17,7 +214,7 @@ const gameData = {
     timerSeconds: 60,
     currentRound: 1,
     currentTeam: 0,
-    currentPlayerIndex: 0, // Index du joueur actuel dans l'équipe
+    currentPlayerIndex: 0,
     roundDescriptions: [
         "Manche 1: Décrire avec des mots sans passer",
         "Manche 2: Un seul mot",
@@ -28,16 +225,35 @@ const gameData = {
     currentCardIndex: 0,
     scores: [],
     passedCards: [],
-    // Statistiques du jeu
     stats: {
-        cardsFoundByTeam: [], // Nombre de cartes trouvées par équipe
-        cardsFoundByRound: [0, 0, 0], // Nombre de cartes trouvées par manche
-        timePerCard: [], // Temps moyen par carte
-        passedCardsCount: 0 // Nombre de cartes passées
+        cardsFoundByTeam: [],
+        cardsFoundByRound: [0, 0, 0],
+        timePerCard: [],
+        passedCardsCount: 0
     },
-    // Paramètres audio
     soundEnabled: true
 };
+
+
+// Ajouter ces propriétés à gameData
+function initSoundSystem() {
+    if (!gameData.sound) {
+        gameData.sound = {
+            enabled: true,
+            volume: 0.7,
+            currentPack: 'default'
+        };
+    }
+
+    if (!gameData.vibration) {
+        gameData.vibration = {
+            enabled: true
+        };
+    }
+
+    // Charger les préférences sauvegardées si elles existent
+    loadSoundPreferences();
+}
 
 // DOM Elements
 const setupPhase = document.getElementById('setup-phase');
@@ -545,6 +761,9 @@ function setupCategories() {
         input.value = category;
         input.checked = true; // All categories selected by default
 
+        // Ajouter un écouteur pour mettre à jour les catégories sélectionnées
+        input.addEventListener('change', updateSelectedCategories);
+
         const label = document.createElement('label');
         label.htmlFor = `category-${category}`;
         label.textContent = category;
@@ -554,6 +773,10 @@ function setupCategories() {
         categoriesContainer.appendChild(div);
     });
 
+    // Ajouter l'amélioration des checkboxes
+    enhanceCategoryCheckboxes();
+
+    // Initialiser les catégories sélectionnées
     updateSelectedCategories();
 }
 
@@ -597,6 +820,11 @@ function startGame() {
     // Generate cards
     generateGameCards();
 
+    // Appliquer à nouveau le filtre de difficulté aux cartes générées
+    if (typeof filterWordsByDifficulty === 'function') {
+        filterWordsByDifficulty();
+    }
+
     // Vérifier qu'il y a bien des cartes générées
     if (gameData.gameCards.length === 0) {
         // Afficher un toast d'erreur
@@ -623,6 +851,11 @@ function startGame() {
 
     // Prepare for first round
     prepareRound();
+
+    // Appliquer le filtre aux cartes de la manche également
+    if (typeof applyDifficultyToCurrentRound === 'function') {
+        applyDifficultyToCurrentRound();
+    }
 
     // Vérifier que des cartes sont disponibles pour la première manche
     if (gameData.roundCards.length === 0) {
@@ -666,7 +899,6 @@ function startGame() {
         }, 500);
     }, 2000);
 }
-
 function generateGameCards() {
     gameData.gameCards = [];
 
@@ -797,11 +1029,15 @@ function updateTimerDisplay() {
     }
 }
 
+// Remplacer la fonction showCurrentCard existante
 function showCurrentCard() {
     if (gameData.roundCards.length === 0) {
         // Pas de cartes disponibles du tout
-        cardCategory.textContent = '';
-        cardWord.textContent = 'Plus de cartes!';
+        const cardCategory = document.getElementById('card-category');
+        const cardWord = document.getElementById('card-word');
+        if (cardCategory) cardCategory.textContent = '';
+        if (cardWord) cardWord.textContent = 'Plus de cartes!';
+
         nextCardButton.disabled = true;
         passCardButton.disabled = true;
 
@@ -817,18 +1053,25 @@ function showCurrentCard() {
         gameData.currentCardIndex = 0;
     }
 
-    // Animation de flip avant d'afficher la nouvelle carte
-    animateCardFlip();
-
-    // Afficher la carte actuelle (qui est maintenant garantie d'exister)
-    const card = gameData.roundCards[gameData.currentCardIndex];
-
-    // Léger délai pour synchroniser avec l'animation
-    setTimeout(() => {
-        cardCategory.textContent = card.category;
-        cardWord.textContent = card.word;
-    }, 150);
+    // Effet de flip 3D pour la carte
+    flipCard();
 }
+
+// Pour initialiser la carte 3D
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter ce code à la fin de votre fonction initGame()
+    if (!gameData.effects) {
+        gameData.effects = {
+            tiltEnabled: true,
+            animationsEnabled: true
+        };
+    }
+
+    // Configurer la structure de carte 3D après que le DOM est complètement chargé
+    setTimeout(() => {
+        setupCardStructure();
+    }, 500);
+});
 
 function nextCard() {
     if (gameData.currentCardIndex < gameData.roundCards.length) {
@@ -1314,3 +1557,329 @@ function renderGameStats() {
     // Ajouter les statistiques à la page
     document.getElementById('winner-display').after(statsContainer);
 }
+
+function setupCardStructure() {
+    const gameCard = document.querySelector('.game-card');
+    if (!gameCard || gameCard.querySelector('.card-inner')) return;
+
+    // Sauvegarder le contenu original
+    const category = document.getElementById('card-category');
+    const word = document.getElementById('card-word');
+    const originalContent = {
+        category: category.innerHTML,
+        word: word.innerHTML
+    };
+
+    // Vider la carte
+    gameCard.innerHTML = '';
+
+    // Créer la structure de carte 3D
+    const cardInner = document.createElement('div');
+    cardInner.className = 'card-inner';
+
+    const cardFront = document.createElement('div');
+    cardFront.className = 'card-front';
+
+    const cardBack = document.createElement('div');
+    cardBack.className = 'card-back';
+
+    // Recréer les éléments de catégorie et mot
+    const newCategory = document.createElement('div');
+    newCategory.id = 'card-category';
+    newCategory.className = 'card-category';
+    newCategory.innerHTML = originalContent.category;
+
+    const newWord = document.createElement('div');
+    newWord.id = 'card-word';
+    newWord.innerHTML = originalContent.word;
+
+    // Ajouter les éléments dans l'ordre correct
+    cardFront.appendChild(newCategory);
+    cardFront.appendChild(newWord);
+
+    // Ajouter un dos de carte
+    const cardBackContent = document.createElement('div');
+    cardBackContent.innerHTML = '<div class="card-logo"></div>';
+    cardBack.appendChild(cardBackContent);
+
+    // Assembler la carte
+    cardInner.appendChild(cardFront);
+    cardInner.appendChild(cardBack);
+    gameCard.appendChild(cardInner);
+
+    // Ajouter effet de tilt au survol
+    setupTiltEffect(gameCard);
+}
+
+// Effet d'inclinaison au survol (tilt)
+function setupTiltEffect(card) {
+    card.addEventListener('mousemove', e => {
+        if (!gameData.effects || !gameData.effects.tiltEnabled) return;
+
+        const cardRect = card.getBoundingClientRect();
+        const cardCenterX = cardRect.left + cardRect.width / 2;
+        const cardCenterY = cardRect.top + cardRect.height / 2;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        // Calculer la position relative de la souris par rapport au centre de la carte
+        const deltaX = mouseX - cardCenterX;
+        const deltaY = mouseY - cardCenterY;
+
+        // Calculer l'inclinaison (max 10 degrés)
+        const tiltX = -(deltaY / (cardRect.height / 2)) * 10;
+        const tiltY = (deltaX / (cardRect.width / 2)) * 10;
+
+        // Appliquer la transformation
+        card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+
+    // Réinitialiser quand la souris quitte la carte
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+}
+
+// Animation de flip pour les cartes
+function flipCard() {
+    const gameCard = document.querySelector('.game-card');
+    if (!gameCard) return;
+
+    // Ajouter la classe pour l'animation de flip
+    gameCard.classList.add('card-flip');
+
+    // Attendre la fin de l'animation pour afficher le contenu
+    setTimeout(() => {
+        // Mettre à jour le contenu
+        const card = gameData.roundCards[gameData.currentCardIndex];
+        const cardCategory = document.getElementById('card-category');
+        const cardWord = document.getElementById('card-word');
+
+        if (cardCategory && cardWord && card) {
+            cardCategory.textContent = card.category;
+            cardWord.textContent = card.word;
+        }
+
+        // Retourner la carte pour montrer le contenu
+        gameCard.classList.remove('card-flip');
+    }, 300);
+}
+
+// Sauvegarder les préférences de son dans localStorage
+function saveSoundPreferences() {
+    try {
+        const soundPrefs = {
+            soundEnabled: gameData.sound.enabled,
+            soundVolume: gameData.sound.volume,
+            soundPack: gameData.sound.currentPack,
+            vibrationEnabled: gameData.vibration.enabled
+        };
+
+        localStorage.setItem('timesdoneSoundPrefs', JSON.stringify(soundPrefs));
+    } catch (e) {
+        console.warn('Impossible de sauvegarder les préférences de son:', e);
+    }
+}
+
+// Charger les préférences de son depuis localStorage
+function loadSoundPreferences() {
+    try {
+        const savedPrefs = localStorage.getItem('timesdoneSoundPrefs');
+        if (savedPrefs) {
+            const prefs = JSON.parse(savedPrefs);
+
+            gameData.sound.enabled = prefs.soundEnabled !== undefined ? prefs.soundEnabled : true;
+            gameData.sound.volume = prefs.soundVolume !== undefined ? prefs.soundVolume : 0.7;
+            gameData.sound.currentPack = prefs.soundPack || 'default';
+            gameData.vibration.enabled = prefs.vibrationEnabled !== undefined ? prefs.vibrationEnabled : true;
+        }
+    } catch (e) {
+        console.warn('Impossible de charger les préférences de son:', e);
+    }
+}
+
+// Fonction pour jouer un son avec les nouvelles configurations
+function playSound(soundType) {
+    try {
+        if (!gameData.sound.enabled) return;
+
+        // Utiliser le pack de sons actuel
+        const currentPack = gameData.sound.currentPack;
+        let soundPath = soundConfig[currentPack][soundType] || soundConfig['default'][soundType];
+
+        if (!soundPath) {
+            soundPath = soundConfig['default']['click'];
+        }
+
+        // Vérifier si le fichier son existe
+        fetch(soundPath)
+            .then(response => {
+                if (response.ok) {
+                    // Le fichier son existe, on peut le jouer
+                    const sound = new Audio(soundPath);
+                    sound.volume = gameData.sound.volume;
+                    sound.play().catch(e => {
+                        console.warn("Impossible de jouer le son. Cela peut être dû à des restrictions du navigateur:", e);
+                    });
+                } else {
+                    console.warn(`Le fichier son ${soundPath} n'existe pas ou n'est pas accessible`);
+                }
+            })
+            .catch(error => {
+                console.warn(`Erreur lors de la vérification du fichier son ${soundPath}:`, error);
+            });
+
+        // Jouer la vibration si activée et supportée par le navigateur
+        if (gameData.vibration.enabled && 'vibrate' in navigator) {
+            const pattern = vibrationPatterns[soundType] || [50];
+            navigator.vibrate(pattern);
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de la lecture du son:", error);
+    }
+}
+
+// Ajouter un écran de configuration des sons
+function createSoundSettingsUI() {
+    const settingsContainer = document.createElement('div');
+    settingsContainer.id = 'sound-settings';
+    settingsContainer.className = 'sound-settings hidden';
+
+    settingsContainer.innerHTML = `
+    <div class="settings-card">
+      <h3><i class="fas fa-volume-up"></i> Paramètres sonores</h3>
+      <div class="settings-row">
+        <label>Sons activés</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="sound-enabled" ${gameData.sound.enabled ? 'checked' : ''}>
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+      <div class="settings-row">
+        <label>Volume</label>
+        <input type="range" id="sound-volume" min="0" max="1" step="0.1" value="${gameData.sound.volume}">
+      </div>
+      <div class="settings-row">
+        <label>Pack de sons</label>
+        <select id="sound-pack">
+          <option value="default" ${gameData.sound.currentPack === 'default' ? 'selected' : ''}>Standard</option>
+          <option value="futuristic" ${gameData.sound.currentPack === 'futuristic' ? 'selected' : ''}>Futuriste</option>
+          <option value="funny" ${gameData.sound.currentPack === 'funny' ? 'selected' : ''}>Comique</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <label>Vibrations</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="vibration-enabled" ${gameData.vibration.enabled ? 'checked' : ''}>
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+      <div class="settings-actions">
+        <button id="test-sound" class="btn-secondary"><i class="fas fa-play"></i> Tester</button>
+        <button id="save-sound-settings" class="btn-accent"><i class="fas fa-save"></i> Sauvegarder</button>
+      </div>
+    </div>
+  `;
+
+    document.body.appendChild(settingsContainer);
+
+    // Ajouter les événements
+    document.getElementById('sound-enabled').addEventListener('change', function(e) {
+        gameData.sound.enabled = e.target.checked;
+    });
+
+    document.getElementById('sound-volume').addEventListener('input', function(e) {
+        gameData.sound.volume = parseFloat(e.target.value);
+    });
+
+    document.getElementById('sound-pack').addEventListener('change', function(e) {
+        gameData.sound.currentPack = e.target.value;
+    });
+
+    document.getElementById('vibration-enabled').addEventListener('change', function(e) {
+        gameData.vibration.enabled = e.target.checked;
+    });
+
+    document.getElementById('test-sound').addEventListener('click', function() {
+        playSound('card-found');
+        setTimeout(() => playSound('card-pass'), 700);
+        setTimeout(() => playSound('timer-end'), 1400);
+    });
+
+    document.getElementById('save-sound-settings').addEventListener('click', function() {
+        saveSoundPreferences();
+        document.getElementById('sound-settings').classList.add('hidden');
+
+        // Afficher un toast de confirmation
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> Paramètres sonores sauvegardés';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 500);
+        }, 2000);
+    });
+
+    // Ajouter un bouton pour accéder aux paramètres sonores
+    addSoundSettingsButton();
+}
+
+// Ajouter un bouton pour accéder aux paramètres sonores
+function addSoundSettingsButton() {
+    // Vérifier si le bouton existe déjà
+    if (document.getElementById('open-sound-settings')) return;
+
+    const soundToggle = document.querySelector('.sound-toggle');
+    if (soundToggle) {
+        const settingsButton = document.createElement('button');
+        settingsButton.id = 'open-sound-settings';
+        settingsButton.className = 'sound-settings-button';
+        settingsButton.innerHTML = '<i class="fas fa-cog"></i>';
+        settingsButton.title = 'Paramètres sonores';
+
+        soundToggle.appendChild(settingsButton);
+
+        settingsButton.addEventListener('click', function() {
+            document.getElementById('sound-settings').classList.remove('hidden');
+        });
+    }
+}
+
+// Améliorer l'ergonomie des checkboxes de catégories
+function enhanceCategoryCheckboxes() {
+    // Sélectionner toutes les divs de catégories
+    const categoryDivs = document.querySelectorAll('.category-checkbox');
+
+    // Ajouter un écouteur d'événements à chaque div
+    categoryDivs.forEach(div => {
+        div.addEventListener('click', function(event) {
+            // Ne pas déclencher si on a cliqué directement sur la checkbox
+            if (event.target.type !== 'checkbox') {
+                // Trouver la checkbox à l'intérieur de cette div
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                // Inverser l'état de la checkbox
+                checkbox.checked = !checkbox.checked;
+
+                // Déclencher un événement de changement pour mettre à jour les catégories sélectionnées
+                const changeEvent = new Event('change');
+                checkbox.dispatchEvent(changeEvent);
+
+                // Mettre à jour les catégories sélectionnées
+                updateSelectedCategories();
+            }
+        });
+    });
+}
+
+// Initialiser le système de sons lors du chargement
+document.addEventListener('DOMContentLoaded', function() {
+    initSoundSystem();
+
+    // Ajouter l'interface de paramètres sonores après le chargement complet
+    setTimeout(() => {
+        createSoundSettingsUI();
+    }, 1000);
+});
